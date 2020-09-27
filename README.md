@@ -5,6 +5,7 @@
 ### 下载LLVM源码，生成LLVM.xcodeproj
 
 * Apple's fork of llvm-project
+
     * Code：https://github.com/apple/llvm-project.git
     * Branch apple/stable/20200714
     
@@ -20,11 +21,16 @@ cmake -G Xcode -DLLVM_ENABLE_PROJECTS='clang;clang-tools-extra' ../llvm
 
 ### 新建CLang工具，加入LLVM.xcodeproj（CLang libTooling）
 
-* 假设新建名字为CodeStyleRefactor：
+* 假设新建名字为CodeStyleRefactor
+
 * 进入目录 ```llvm-project/clang-tools-extra```
+
 * CMakeLists.txt 添加 ```add_subdirectory(CodeStyleRefactor)```
+
 * 新建目录 ```CodeStyleRefactor```
+
 * 进入目录 ```CodeStyleRefactor```
+
 * 新建 CMakeList.txt 添加以下内容
 
 ```
@@ -56,6 +62,68 @@ clang_target_link_libraries(CodeStyleRefactor
 * 进入llvm-project/build重新cmake
 * 打开LLVM.xcodeproj，即可在Clang executables分组下看到 CodeStyleRefactor
 * 打开LLVM.xcodeproj时会提示自动创建Scheme，建议不自动创建，后续手动创建clang和CodeStyleRefactor两个即可
+
+### 具体实现CodeStyleRefactor
+
+* ```什么也没有```
+
+
+### 配置目标工程
+
+* 以ATClangObfuscatorTest工程为例
+
+* 打开ATClangObfuscatorTest.xcodeproj，新建Analyze配置（PROJECT->Configurations->Duplicate "Debug" Configuration）
+
+* 修改Build Settings中Analyze配置
+
+   * Enable Modules (C and Object-C) = NO
+```
+fatal error: no handler registered for module format 'obj'
+LLVM ERROR: unknown module format
+```
+   * Enable Index-While-Building Functionality = NO
+```
+Xcode 9.0 adds -index-store-path to the build command. It's not supported in clang yet. See this explanation.
+You can remove it by disabling the build option Index-While-Building Functionality in Xcode.
+```
+   * User-Defined 添加CC、CXX，值为本地编译的clang可执行文件路径（如果没有使用预编译，此处可省略）
+```
+error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
+
+/Users/linzhiman/llvm-project/build/Release/bin/clang
+```
+
+* 命令行进入ATClangObfuscatorTest目录，使用xcodebuild命令生成目标工程的compile_commands.json
+```
+xcodebuild clean build -project ATClangObfuscatorTest.xcodeproj -scheme ATClangObfuscatorTest -configuration Analyze -sdk iphonesimulator13.2  | tee xcodebuild.log | xcpretty --report json-compilation-database --output compile_commands.json
+```
+
+* 命令行进入llvm-project/build/Release/bin，执行CodeStyleRefactor工具
+```
+./CodeStyleRefactor /Users/linzhiman/ATClangObfuscator/ATClangObfuscatorTest/
+```
+
+* 如果提示找不到string头文件，将以下目录拷贝到llvm-project/build/Release目录
+```
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+```
+
+* 如果目标工程使用了预编译，当用xcodebuild后又修改了预编译文件，执行工具时会提示一下错误。此时避免重新编译整个工程，可如下处理：   
+
+   * 打开xcodebuild.log（目标工程根目录下）
+   * 搜索ProcessPCH，并将完整命令拷贝到命令行重新执行
+```
+error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
+```
+
+* 注：工具使用Release编译可以极大的提高工具的执行效率，特别是目标工程有大量文件时
+
+### 参考资料
+
+* [Clang 12 documentation](https://clang.llvm.org/docs/)
+* [Clang Tutorial](http://swtv.kaist.ac.kr/courses/cs453-fall13/Clang%20tutorial%20v4.pdf)
+
+
 
 
 
