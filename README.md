@@ -60,7 +60,9 @@ clang_target_link_libraries(CodeStyleRefactor
   )
 ```
 * 进入llvm-project/build重新cmake
+
 * 打开LLVM.xcodeproj，即可在Clang executables分组下看到 CodeStyleRefactor
+
 * 打开LLVM.xcodeproj时会提示自动创建Scheme，建议不自动创建，后续手动创建clang和CodeStyleRefactor两个即可
 
 ### 具体实现CodeStyleRefactor
@@ -77,21 +79,23 @@ clang_target_link_libraries(CodeStyleRefactor
 * 修改Build Settings中Analyze配置
 
    * Enable Modules (C and Object-C) = NO
-```
-fatal error: no handler registered for module format 'obj'
-LLVM ERROR: unknown module format
-```
+   ```
+   fatal error: no handler registered for module format 'obj'
+   LLVM ERROR: unknown module format
+   ```
+   
    * Enable Index-While-Building Functionality = NO
-```
-Xcode 9.0 adds -index-store-path to the build command. It's not supported in clang yet. See this explanation.
-You can remove it by disabling the build option Index-While-Building Functionality in Xcode.
-```
+   ```
+   Xcode 9.0 adds -index-store-path to the build command. It's not supported in clang yet. See this explanation.
+   You can remove it by disabling the build option Index-While-Building Functionality in Xcode.
+   ```
+   
    * User-Defined 添加CC、CXX，值为本地编译的clang可执行文件路径（如果没有使用预编译，此处可省略）
-```
-error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
-
-/Users/linzhiman/llvm-project/build/Release/bin/clang
-```
+   ```
+   error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
+   
+   /Users/linzhiman/llvm-project/build/Release/bin/clang
+   ```
 
 * 命令行进入ATClangObfuscatorTest目录，使用xcodebuild命令生成目标工程的compile_commands.json
 ```
