@@ -19,6 +19,7 @@
 		DC7B0C722512F6A200534550 /* ATMonster.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C712512F6A200534550 /* ATMonster.m */; };
 		DC7B0C762512F87D00534550 /* ATTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C752512F87D00534550 /* ATTest.m */; };
 		DC7B0C792512FB1800534550 /* ATMonster+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C782512FB1800534550 /* ATMonster+Action.m */; };
+		DCE9ED51252088B100E6EE2D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE9ED50252088B100E6EE2D /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		DC7B0C772512FB1800534550 /* ATMonster+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATMonster+Action.h"; sourceTree = "<group>"; };
 		DC7B0C782512FB1800534550 /* ATMonster+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATMonster+Action.m"; sourceTree = "<group>"; };
 		DC7B0CAB251446DC00534550 /* ATMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATMacro.h; sourceTree = "<group>"; };
+		DCE9ED50252088B100E6EE2D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCE9ED51252088B100E6EE2D /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +124,7 @@
 		DC7B0C8D25143E1700534550 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DCE9ED50252088B100E6EE2D /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -437,7 +441,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				COMPILER_INDEX_STORE_ENABLE = NO;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ATClangObfuscatorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
