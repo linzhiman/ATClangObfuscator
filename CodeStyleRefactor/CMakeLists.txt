@@ -7,6 +7,8 @@ add_clang_executable(CodeStyleRefactor
   CodeStyleRefactor.cpp
   CSUtils.cpp
   CSUtils.hpp
+  CSCache.cpp
+  CSCache.hpp
   )
 
 clang_target_link_libraries(CodeStyleRefactor

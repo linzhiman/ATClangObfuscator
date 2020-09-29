@@ -27,6 +27,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "CSUtils.hpp"
+#include "CSCache.hpp"
 
 using namespace llvm;
 using namespace clang;
@@ -38,48 +39,8 @@ const std::string kSelSetterPrefix = "setSealion_";
 
 bool runSelectorComsumer;
 
-//类名:方法列表
-std::map<std::string , /* class name */
-         std::map<std::string, std::string> /*selector : new selecotr */ > clsMethodMap;
+CSCache gCache;
 
-//selector列表
-std::set<std::string> selectorSet;
-
-//白名单
-std::set<std::string> whiteListSet;
-
-//黑名单
-std::set<std::string> blackListSet;
-
-void SerializaSelectorSet(const std::set<std::string> &selectorSet, const std::string &filePath)
-{
-    std::ofstream ofs = std::ofstream(filePath, std::ofstream::out);
-    
-    ofs <<"selectorCcount:" << "\t" << selectorSet.size() << "\n";
-    
-    for (auto it = selectorSet.begin(); it != selectorSet.end(); ++it) {
-        ofs << *it <<"\n";
-    }
-}
-
-void UnserializaSelectorSet(std::set<std::string> &selectorSet, const std::string &filePath)
-{
-    std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
-    
-    std::string selectorCountTag;
-    int selectorCount;
-    
-    std::string selector;
-    
-    while (!ifs.eof()) {
-        ifs >> selectorCountTag >> selectorCount;
-        while (selectorCount > 0) {
-            ifs >> selector;
-            selectorSet.insert(selector);
-            selectorCount--;
-        }
-    }
-}
 
 std::string ReplaceSelectorName(const std::string& selectorName)
 {
@@ -136,17 +97,6 @@ StringRef GetFilename(ObjCProtocolDecl *decl, SourceManager &sm)
     return sm.getFilename(GetLoc(decl, sm));
 }
 
-bool checkWhiteBlackList(const std::string &name)
-{
-    if (blackListSet.find(name) != blackListSet.end()) {
-        return false;
-    }
-    if (whiteListSet.size() > 0) {
-        return whiteListSet.find(name) != whiteListSet.end();
-    }
-    return true;
-}
-
 bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool checkIgnoreFolder, bool checkList)
 {
     ObjCMethodFamily family = decl->getMethodFamily();
@@ -189,7 +139,7 @@ bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool chec
                 if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
                     StringRef filePath = GetFilename(protocol, sm);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? checkWhiteBlackList(protocol->getNameAsString()) : true;
+                        return checkList ? gCache.checkWhiteBlackList(protocol->getNameAsString()) : true;
                     }
                     break;
                 }
@@ -210,7 +160,7 @@ bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool chec
                     }
                 }
             }
-            return checkList ? checkWhiteBlackList(interfaceDecl->getNameAsString()) : true;
+            return checkList ? gCache.checkWhiteBlackList(interfaceDecl->getNameAsString()) : true;
         }
     }
     else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
@@ -221,7 +171,7 @@ bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool chec
                 if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
                     StringRef filePath = GetFilename(protocol, sm);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? checkWhiteBlackList(protocol->getNameAsString()) : true;
+                        return checkList ? gCache.checkWhiteBlackList(protocol->getNameAsString()) : true;
                     }
                     break;
                 }
@@ -232,12 +182,12 @@ bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool chec
             std::string clsName = interfaceDecl->getNameAsString();
             std::string categoryName = category->getNameAsString();
             std::string realName = ClassCategoryName(clsName, categoryName);
-            return checkList ? checkWhiteBlackList(realName) : true;
+            return checkList ? gCache.checkWhiteBlackList(realName) : true;
         }
     }
     else if (parentKind == Decl::ObjCProtocol) {
         ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
-        return checkList ? checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
+        return checkList ? gCache.checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
     }
     else {
         llvm::outs() << "isNeedObfuscateClassName" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
@@ -270,7 +220,7 @@ void AddReplacement(Selector sel, SourceLocation loc, SourceManager &sm, std::ma
         return;
     }
     
-    if (selectorSet.find(selName) != selectorSet.end()) {
+    if (gCache.ignoreSelector(selName)) {
         llvm::outs() << "AddReplacement Ignore" << "\t" << selName << "\n";
         return;
     }
@@ -371,7 +321,7 @@ public:
             return true;
         }
         
-        if (clsMethodMap.find(decl->getNameAsString()) != clsMethodMap.end() ) {
+        if (gCache.containClsName(decl->getNameAsString())) {
             return true;
         }
         
@@ -387,7 +337,7 @@ public:
             return true;
         }
         
-        if (clsMethodMap.find(decl->getNameAsString()) != clsMethodMap.end() ) {
+        if (gCache.containClsName(decl->getNameAsString())) {
             return true;
         }
         
@@ -407,7 +357,7 @@ public:
         std::string className = decl->getClassInterface()->getNameAsString();
         std::string realName = ClassCategoryName(className, categoryName);
         
-        if (clsMethodMap.find(realName) != clsMethodMap.end()) {
+        if (gCache.containClsName(realName)) {
             return true;
         }
 
@@ -459,18 +409,14 @@ public:
         if (parentKind == Decl::ObjCInterface) {
             ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
             if (interfaceDecl) {
-                auto clsIt = clsMethodMap.find(interfaceDecl->getNameAsString());
-                if (clsIt != clsMethodMap.end()) {
-                    clsIt->second[selector] = ReplaceSelectorName(selector);
+                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
                     AddReplacement(decl, _sm, _replacementMap);
                 }
             }
         } else if (parentKind == Decl::ObjCImplementation) {
             ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
             if (interfaceDecl) {
-                auto clsIt = clsMethodMap.find(interfaceDecl->getNameAsString());
-                if (clsIt != clsMethodMap.end()) {
-                    clsIt->second[selector] = ReplaceSelectorName(selector);
+                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
                     AddReplacement(decl, _sm, _replacementMap);
                 }
             }
@@ -486,18 +432,14 @@ public:
             std::string clsName = interfaceDecl->getNameAsString();
             std::string realName = ClassCategoryName(clsName, catName);
             
-            auto clsIt = clsMethodMap.find(realName);
-            if (clsIt != clsMethodMap.end()) {
-                clsIt->second[selector] = ReplaceSelectorName(selector);
+            if (gCache.addClsNameSelector(realName, selector, ReplaceSelectorName(selector))) {
                 AddReplacement(decl, _sm, _replacementMap);
             }
             
         } else if (parentKind == Decl::ObjCProtocol) {
             ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
             if (protocolDecl) {
-                auto clsIt = clsMethodMap.find(protocolDecl->getNameAsString());
-                if (clsIt != clsMethodMap.end()) {
-                    clsIt->second[selector] = ReplaceSelectorName(selector);
+                if (gCache.addClsNameSelector(protocolDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
                     AddReplacement(decl, _sm, _replacementMap);
                 }
             }
@@ -509,7 +451,7 @@ public:
         if (!decl->hasDefinition() || decl->getDefinition() != decl) {
             return true;
         }
-        clsMethodMap[decl->getNameAsString()] = std::map<string, string>();
+        gCache.addClsName(decl->getNameAsString());
         
         return true;
     }
@@ -520,7 +462,7 @@ public:
         std::string className = decl->getClassInterface()->getNameAsString();
         
         std::string name = ClassCategoryName(className, categoryName);
-        clsMethodMap[name] = std::map<string, string>();
+        gCache.addClsName(name);
         
         return true;
     }
@@ -534,7 +476,7 @@ public:
         if (!decl->hasDefinition() || decl->getDefinition() != decl) {
             return true;
         }
-        clsMethodMap[decl->getNameAsString()] = std::map<string, string>();
+        gCache.addClsName(decl->getNameAsString());
         
         return true;
     }
@@ -693,7 +635,7 @@ public:
         }
         
         if (interfaceName.length() > 0) {
-            if (clsMethodMap.find(interfaceName) == clsMethodMap.end()) {
+            if (!gCache.containClsName(interfaceName)) {
                 return true;
             }
             if (CSUtils::isUserSourceCode(fileName, false)) {
@@ -752,7 +694,7 @@ public:
         
         llvm::outs() << "SelectorExpr" << "\t" << sel.getAsString() << "\n";
         
-        selectorSet.insert(sel.getAsString());
+        gCache.addIgnoreSelector(sel.getAsString());
         
         return true;
     }
@@ -845,15 +787,13 @@ void applyChangeToFiles(RefactoringTool &Tool)
 
 int main(int argc, const char **argv)
 {
-    static llvm::cl::OptionCategory CodeStyleRefactorCategory("CodeStyleRefactor");
-    
     llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
-
-    CommonOptionsParser op(argc, argv, CodeStyleRefactorCategory );
+    
+    llvm::cl::OptionCategory category("CodeStyleRefactor");
+    CommonOptionsParser op(argc, argv, category);
     
     std::vector<std::string> analizeFiles = op.getSourcePathList();
     std::string sourceDir;
-    
     if (analizeFiles.size() == 1) {
         std::string path = analizeFiles.front();
         if (sys::fs::is_regular_file(path)) {
@@ -861,8 +801,7 @@ int main(int argc, const char **argv)
         }
         else {
             sourceDir = path;
-            CompilationDatabase &compilation = op.getCompilations();
-            analizeFiles = CSUtils::GetProjectFiles(compilation.getAllFiles());
+            analizeFiles = CSUtils::filterNotUserSourceCode(op.getCompilations().getAllFiles());
         }
     }
     else {
@@ -872,39 +811,33 @@ int main(int argc, const char **argv)
     
     long long start =  CSUtils::getCurrentTimestamp();
     
-    RefactoringTool Tool(op.getCompilations(), analizeFiles );
+    RefactoringTool Tool(op.getCompilations(), analizeFiles);
     
-    std::unique_ptr<FrontendActionFactory> factory ( new CodeStyleActionFactory(Tool) );
+    std::unique_ptr<FrontendActionFactory> factory (new CodeStyleActionFactory(Tool));
     
     llvm::SmallString<256> Path(sourceDir);
     llvm::sys::path::append(Path, "selectors.txt");
     std::string selectorFilePath = std::string(Path.str());
     if (sys::fs::exists(selectorFilePath)) {
-        UnserializaSelectorSet(selectorSet, selectorFilePath);
+        gCache.loadIgnoreSelectors(selectorFilePath);
     }
     else {
         runSelectorComsumer = true;
-        
-        if (int Result = Tool.run( factory.get() ) )
-        {
+        if (int Result = Tool.run(factory.get())) {
             return Result;
         }
-        
-        SerializaSelectorSet(selectorSet, selectorFilePath);
+        gCache.saveIgnoreSelectors(selectorFilePath);
     }
     
+    gCache.addClsName("_ObjCId_");
+    
     runSelectorComsumer = false;
-    
-    clsMethodMap["_ObjCId_"] = std::map<string, string>();
-    
-    if (int Result = Tool.run( factory.get() ) )
-    {
+    if (int Result = Tool.run(factory.get())) {
         return Result;
     }
     
     applyChangeToFiles(Tool);
     
     llvm::outs() << "[Finish] total files:" << analizeFiles.size() <<" cost time:" << CSUtils::getCurrentTimestamp() - start << "(ms)\n";
-    
     return 0;
 }

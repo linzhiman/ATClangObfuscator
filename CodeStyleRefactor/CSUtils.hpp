@@ -16,10 +16,10 @@ class CSUtils
 {
 public:
     static long long getCurrentTimestamp();
+    
     static bool isUserSourceCode(const std::string filename, bool checkIgnoreFolder);
-    static void WriteFile(std::string &Filename, const std::string &Contents);
-    static std::vector<std::string> GetProjectFiles(const std::vector<string> &allFiles);
-    static std::vector<std::string> GetFilesWithFolder(const std::string &folderName, const std::vector<std::string> &allFiles );
+    
+    static std::vector<std::string> filterNotUserSourceCode(const std::vector<string> &allFiles);
 };
 
 #endif /* CSUtils_hpp */

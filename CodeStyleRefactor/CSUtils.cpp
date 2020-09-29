@@ -47,7 +47,7 @@ bool CSUtils::isUserSourceCode(const std::string filename, bool checkIgnoreFolde
     
     for (auto it = ignoreFolder.begin(); it != ignoreFolder.end(); ++it )
     {
-        if (filename.find( *it ) != std::string::npos) {
+        if (filename.find(*it) != std::string::npos) {
             return false;
         }
     }
@@ -63,7 +63,7 @@ bool CSUtils::isUserSourceCode(const std::string filename, bool checkIgnoreFolde
     
     for (auto it = ignoreFolder2.begin(); it != ignoreFolder2.end(); ++it )
     {
-        if (filename.find( *it ) != std::string::npos) {
+        if (filename.find(*it) != std::string::npos) {
             return false;
         }
     }
@@ -71,48 +71,16 @@ bool CSUtils::isUserSourceCode(const std::string filename, bool checkIgnoreFolde
     return true;
 }
 
-std::vector<std::string> CSUtils::GetProjectFiles(const std::vector<string> &allFiles)
+std::vector<std::string> CSUtils::filterNotUserSourceCode(const std::vector<string> &allFiles)
 {
     std::vector<std::string> result;
-    result.reserve( allFiles.size() );
+    result.reserve(allFiles.size());
     
     for (auto it = allFiles.begin();  it != allFiles.end(); ++it) {
-        if (isUserSourceCode( *it, false)) {
+        if (isUserSourceCode(*it, false)) {
             result.push_back(it->c_str());
         }
     }
     
     return result;
-}
-
-std::vector<std::string> CSUtils::GetFilesWithFolder(const std::string &folderName, const std::vector<string> &allFiles )
-{
-    std::vector<std::string> result;
-    result.reserve( allFiles.size() );
-    
-    for ( auto it = allFiles.begin(); it != allFiles.end(); ++it ) {
-        if (!isUserSourceCode(*it, false)) {
-            continue;
-        }
-        if ( it->find(folderName) != std::string::npos) {
-            result.push_back( it->c_str() );
-        }
-    }
-    
-    return result;
-}
-
-void CSUtils::WriteFile(std::string &Filename, const std::string &Contents)
-{
-  if (!llvm::sys::path::is_absolute(Filename)) {
-    llvm::SmallString<256> Path("~/clangOut");
-    llvm::sys::path::append(Path, Filename);
-    Filename = std::string(Path.str());
-//    Files.insert(Filename);
-  }
-    
-  llvm::sys::fs::create_directories(llvm::sys::path::parent_path(Filename));
-  std::ofstream OS(Filename);
-  OS << Contents;
-  assert(OS.good());
 }
