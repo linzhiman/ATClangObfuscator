@@ -53,7 +53,7 @@ public:
     bool TraverseDeclContextHelper(DeclContext *DC)
     {
         if (!DC) {
-          return true;
+            return true;
         }
         
         if (DC->isTranslationUnit() || DC->isObjCContainer() || DC->isFunctionOrMethod()) {
@@ -468,19 +468,19 @@ public:
     CodeStyleASTAction (RefactoringTool &refactoingTool)
     : ASTFrontendAction(), _refactoringTool(refactoingTool) {}
     
-    unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef iFile) override
+    unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override
     {
-        if (!CSUtils::isUserSourceCode(iFile.str(), false)) {
-            llvm::outs() << "[Ignore] file:" << iFile.str() << "\n";
+        if (!CSUtils::isUserSourceCode(InFile.str(), false)) {
+            llvm::outs() << "[Ignore] file:" << InFile.str() << "\n";
             return unique_ptr<ASTConsumer>();
         }
         
-        llvm::outs() << " [Analize] file:" << iFile.str() << "\n";
+        llvm::outs() << " [Analize] file:" << InFile.str() << "\n";
         
         if (runSelectorComsumer) {
             return unique_ptr<CodeStyleSelectorConsumer> (new CodeStyleSelectorConsumer(CI));
         }
-        return unique_ptr<CodeStyleASTConsumer> (new CodeStyleASTConsumer(_refactoringTool.getReplacements(), CI, iFile));
+        return unique_ptr<CodeStyleASTConsumer> (new CodeStyleASTConsumer(_refactoringTool.getReplacements(), CI, InFile));
     }
     
     bool ParseArgs(const CompilerInstance &ci, const std::vector<std::string> &args)
@@ -504,24 +504,24 @@ public:
     }
 };
 
-void applyChangeToFiles(RefactoringTool &Tool)
+void applyChangeToFiles(RefactoringTool &tool)
 {
-    IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
-    DiagnosticsEngine Diagnostics(IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-                                  &*DiagOpts,
-                                  new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts),
+    IntrusiveRefCntPtr<DiagnosticOptions> diagOpts = new DiagnosticOptions();
+    DiagnosticsEngine diagnostics(IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
+                                  &*diagOpts,
+                                  new TextDiagnosticPrinter(llvm::errs(), &*diagOpts),
                                   true);
 
-    SourceManager Sources(Diagnostics, Tool.getFiles());
+    SourceManager sources(diagnostics, tool.getFiles());
     
-    Rewriter Rewrite(Sources, LangOptions());
-    Tool.applyAllReplacements(Rewrite);
+    Rewriter rewriter(sources, LangOptions());
+    tool.applyAllReplacements(rewriter);
     
-    for (Rewriter::buffer_iterator I = Rewrite.buffer_begin(), E = Rewrite.buffer_end(); I != E; ++I) {
-        I->second.write(llvm::outs());
+    for (Rewriter::buffer_iterator I = rewriter.buffer_begin(), E = rewriter.buffer_end(); I != E; ++I) {
+//        I->second.write(llvm::outs());
     }
     
-    Rewrite.overwriteChangedFiles();
+    rewriter.overwriteChangedFiles();
 }
 
 int main(int argc, const char **argv)
@@ -550,19 +550,19 @@ int main(int argc, const char **argv)
     
     long long start =  CSUtils::getCurrentTimestamp();
     
-    RefactoringTool Tool(op.getCompilations(), analizeFiles);
+    RefactoringTool tool(op.getCompilations(), analizeFiles);
     
-    std::unique_ptr<FrontendActionFactory> factory (new CodeStyleActionFactory(Tool));
+    std::unique_ptr<FrontendActionFactory> factory(new CodeStyleActionFactory(tool));
     
-    llvm::SmallString<256> Path(sourceDir);
-    llvm::sys::path::append(Path, "selectors.txt");
-    std::string selectorFilePath = std::string(Path.str());
+    llvm::SmallString<256> path(sourceDir);
+    llvm::sys::path::append(path, "selectors.txt");
+    std::string selectorFilePath = std::string(path.str());
     if (sys::fs::exists(selectorFilePath)) {
         gCache.loadIgnoreSelectors(selectorFilePath);
     }
     else {
         runSelectorComsumer = true;
-        if (int Result = Tool.run(factory.get())) {
+        if (int Result = tool.run(factory.get())) {
             return Result;
         }
         gCache.saveIgnoreSelectors(selectorFilePath);
@@ -570,15 +570,15 @@ int main(int argc, const char **argv)
     
     gCache.addClsName("_ObjCId_");
     gHelper.setSelectorPrefix("sealion_");
-    gHelper.setReplacementsMap(&Tool.getReplacements());
+    gHelper.setReplacementsMap(&tool.getReplacements());
     gHelper.setCache(&gCache);
     
     runSelectorComsumer = false;
-    if (int Result = Tool.run(factory.get())) {
+    if (int Result = tool.run(factory.get())) {
         return Result;
     }
     
-    applyChangeToFiles(Tool);
+    applyChangeToFiles(tool);
     
     llvm::outs() << "[Finish] total files:" << analizeFiles.size() <<" cost time:" << CSUtils::getCurrentTimestamp() - start << "(ms)\n";
     return 0;
