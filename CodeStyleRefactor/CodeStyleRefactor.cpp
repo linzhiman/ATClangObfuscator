@@ -28,270 +28,27 @@
 
 #include "CSUtils.hpp"
 #include "CSCache.hpp"
+#include "CSHelper.hpp"
 
 using namespace llvm;
 using namespace clang;
 using namespace clang::tooling;
 using namespace std;
 
-const std::string kSelPrefix = "sealion_";
-const std::string kSelSetterPrefix = "setSealion_";
-
 bool runSelectorComsumer;
 
 CSCache gCache;
-
-
-std::string ReplaceSelectorName(const std::string& selectorName)
-{
-    if (selectorName.find("set") == 0) {
-        std::string tmp = selectorName.substr(3);
-        tmp[0] = tolower(tmp[0]);
-        return kSelSetterPrefix + tmp;
-    }
-    
-    return kSelPrefix + selectorName;
-}
-
-std::string ClassCategoryName(const std::string &className, const std::string &categoryName )
-{
-    return className + "(" + categoryName + ")";
-}
-
-SourceLocation GetLoc(DeclContext *declContext, SourceManager &sm)
-{
-    SourceLocation loc;
-    if (declContext->getDeclKind() == Decl::ObjCMethod) {
-        auto *tmp = cast<ObjCMethodDecl>(declContext);
-        loc = tmp->getSelectorStartLoc();
-    }
-    else if (declContext->getDeclKind() == Decl::ObjCImplementation) {
-        auto *tmp = cast<ObjCImplementationDecl>(declContext);
-        loc = tmp->getSourceRange().getBegin();
-    }
-    else if (declContext->getDeclKind() == Decl::ObjCProtocol) {
-        auto *tmp = cast<ObjCProtocolDecl>(declContext);
-        loc = tmp->getSourceRange().getBegin();
-    }
-    else {
-        ;;
-    }
-    if (sm.isMacroBodyExpansion(loc) || sm.isMacroArgExpansion(loc)) {
-        loc = sm.getSpellingLoc(loc);
-    }
-    return loc;
-}
-
-StringRef GetFilename(ObjCMethodDecl *decl, SourceManager &sm)
-{
-    return sm.getFilename(GetLoc(decl, sm));
-}
-
-StringRef GetFilename(ObjCImplementationDecl *decl, SourceManager &sm)
-{
-    return sm.getFilename(GetLoc(decl, sm));
-}
-
-StringRef GetFilename(ObjCProtocolDecl *decl, SourceManager &sm)
-{
-    return sm.getFilename(GetLoc(decl, sm));
-}
-
-bool isNeedObfuscateClassName(ObjCMethodDecl *decl, SourceManager &sm, bool checkIgnoreFolder, bool checkList)
-{
-    ObjCMethodFamily family = decl->getMethodFamily();
-    if (family != OMF_None && family != OMF_performSelector) {
-        return false;
-    }
-    
-    Selector selector = decl->getSelector();
-    DeclContext *parent = decl->getParent();
-    Decl::Kind parentKind = parent->getDeclKind();
-    
-    if (decl->getCanonicalDecl()->isPropertyAccessor()) {
-        return false;
-    }
-    else {
-        if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-            ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
-            if (decl->isInstanceMethod()) {
-                for (const auto *I : category->instance_properties()) {
-                    if (selector == I->getGetterName() || selector == I->getSetterName()) {
-                        return false;
-                    }
-                }
-            }
-            else {
-                for (const auto *I : category->class_properties()) {
-                    if (selector == I->getGetterName() || selector == I->getSetterName()) {
-                        return false;
-                    }
-                }
-            }
-        }
-    }
-    
-    if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
-        ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
-        if (decl->isOverriding()) {
-            const ObjCProtocolList &protocolList = interfaceDecl->getReferencedProtocols();
-            for (ObjCProtocolDecl *protocol : protocolList) {
-                if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
-                    StringRef filePath = GetFilename(protocol, sm);
-                    if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? gCache.checkWhiteBlackList(protocol->getNameAsString()) : true;
-                    }
-                    break;
-                }
-            }
-        }
-        else {
-            if (decl->isInstanceMethod()) {
-                for (const auto *I : interfaceDecl->instance_properties()) {
-                    if (selector == I->getGetterName() || selector == I->getSetterName()) {
-                        return false;
-                    }
-                }
-            }
-            else {
-                for (const auto *I : interfaceDecl->class_properties()) {
-                    if (selector == I->getGetterName() || selector == I->getSetterName()) {
-                        return false;
-                    }
-                }
-            }
-            return checkList ? gCache.checkWhiteBlackList(interfaceDecl->getNameAsString()) : true;
-        }
-    }
-    else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-        ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
-        if (decl->isOverriding()) {
-            const ObjCProtocolList &protocolList = category->getReferencedProtocols();
-            for (ObjCProtocolDecl *protocol : protocolList) {
-                if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
-                    StringRef filePath = GetFilename(protocol, sm);
-                    if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? gCache.checkWhiteBlackList(protocol->getNameAsString()) : true;
-                    }
-                    break;
-                }
-            }
-        }
-        else {
-            ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
-            std::string clsName = interfaceDecl->getNameAsString();
-            std::string categoryName = category->getNameAsString();
-            std::string realName = ClassCategoryName(clsName, categoryName);
-            return checkList ? gCache.checkWhiteBlackList(realName) : true;
-        }
-    }
-    else if (parentKind == Decl::ObjCProtocol) {
-        ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
-        return checkList ? gCache.checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
-    }
-    else {
-        llvm::outs() << "isNeedObfuscateClassName" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
-    }
-    
-    return false;
-}
-
-void AddReplacement(const std::string &filePath, const Replacement &replace, std::map<std::string, Replacements> &rpsMap)
-{
-    llvm::outs() << "AddReplacement" << "\t" << replace.toString() << "\n";
-    
-    if( rpsMap.find(filePath) != rpsMap.end() ) {
-        llvm::Error err = rpsMap[filePath].add(replace);
-    } else {
-        rpsMap.insert(make_pair(filePath, Replacements(replace) ));
-    }
-}
-
-void AddReplacement(Selector sel, SourceLocation loc, SourceManager &sm, std::map<std::string, Replacements> &rpsMap, bool isImplicitProperty)
-{
-    std::string selName = sel.getAsString();
-    
-    if (selName.find(kSelPrefix) == 0 || selName.find(kSelSetterPrefix) == 0) {
-        return;
-    }
-    
-    if (sm.isWrittenInScratchSpace(loc)) {
-        llvm::outs() << "AddReplacement Ignore ScratchSpace" << "\t" << selName << "\n";
-        return;
-    }
-    
-    if (gCache.ignoreSelector(selName)) {
-        llvm::outs() << "AddReplacement Ignore" << "\t" << selName << "\n";
-        return;
-    }
-    
-    // - methodName:(type0)arg0 slot1:(type1)arg1
-    //目前只处理 methodName
-    std::string selector = sel.getNameForSlot(0).str();
-    
-    if (isImplicitProperty && selector.find("set") == 0) {
-        selector = selector.substr(3);
-        selector[0] = toLower(selector[0]);
-    }
-    
-    StringRef filePath = sm.getFilename(loc);
-    unsigned begin = sm.getFileOffset(loc);
-    unsigned length = selector.length();
-    std::string newName = ReplaceSelectorName(selector);
-    
-    Replacement rep(filePath, begin, length, newName );
-    AddReplacement(filePath.str(), rep, rpsMap);
-}
-
-void AddReplacement(ObjCMethodDecl *decl, SourceManager &sm, std::map<std::string, Replacements> &rpsMap)
-{
-    Selector sel = decl->getSelector();
-    SourceLocation loc = GetLoc(decl, sm);
-    AddReplacement(sel, loc, sm, rpsMap, false);
-}
-
-void AddReplacement(ObjCMessageExpr *expr, SourceManager &sm, std::map<std::string, Replacements> &rpsMap, ASTContext &context)
-{
-    Selector sel = expr->getSelector();
-    
-    bool isImplicitProperty = false;
-    DynTypedNodeList nodeList = context.getParents( *expr );
-    for( auto it = nodeList.begin(); it != nodeList.end(); ++it) {
-        if (it->getNodeKind().isSame(ASTNodeKind::getFromNodeKind<PseudoObjectExpr>())) {
-            const PseudoObjectExpr *pseudo = it->get<PseudoObjectExpr>();
-            if (const BinaryOperator *binaryOperator = dyn_cast_or_null<BinaryOperator>(pseudo->getSyntacticForm())) {
-                if (ObjCPropertyRefExpr *propertyRefExpr = dyn_cast_or_null<ObjCPropertyRefExpr>(binaryOperator->getLHS())) {
-                    if (propertyRefExpr->isImplicitProperty()) {
-                        isImplicitProperty = true;
-                    }
-                }
-            }
-            break;
-        }
-    }
-    
-    SourceLocation loc = expr->getSelectorStartLoc();
-    if (sm.isMacroBodyExpansion(loc) || sm.isMacroArgExpansion(loc)) {
-        loc = sm.getSpellingLoc(loc);
-    }
-    AddReplacement(sel, loc, sm, rpsMap, isImplicitProperty);
-}
+CSHelper gHelper;
 
 class ObjCMethodDeclVisitor : public RecursiveASTVisitor<ObjCMethodDeclVisitor>
 {
+private:
     SourceManager &_sm;
-    
-    std::map<std::string, Replacements> &_replacementMap;
-    std::queue<Decl::Kind> _visitQueueKind;
     bool _isTraverseImp;
     
 public:
-    ObjCMethodDeclVisitor(SourceManager &sm, std::map<std::string, Replacements> &rpsMap)
-    : _sm(sm)
-    , _replacementMap(rpsMap)
-    {
-        
-    }
+    ObjCMethodDeclVisitor(SourceManager &sm)
+    : _sm(sm) {}
     
     bool TraverseDeclContextHelper(DeclContext *DC)
     {
@@ -299,7 +56,7 @@ public:
           return true;
         }
         
-        if ( DC->isTranslationUnit() || DC->isObjCContainer() || DC->isFunctionOrMethod()) {
+        if (DC->isTranslationUnit() || DC->isObjCContainer() || DC->isFunctionOrMethod()) {
             for (auto *Child : DC->decls()) {
                 if (!canIgnoreChildDeclWhileTraversingDeclContext(Child)) {
                     TraverseDecl(Child);
@@ -309,7 +66,8 @@ public:
         return true;
     }
 
-    bool TraverseImportDecl(ImportDecl * decl) {
+    bool TraverseImportDecl(ImportDecl * decl)
+    {
         llvm::outs() << "TraverseImportDecl " << decl->getImportedModule()->getFullModuleName() << "\n";
         return true;
     }
@@ -355,7 +113,7 @@ public:
         
         std::string categoryName = decl->getNameAsString();
         std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = ClassCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(className, categoryName);
         
         if (gCache.containClsName(realName)) {
             return true;
@@ -370,7 +128,7 @@ public:
     {
         std::string categoryName = decl->getNameAsString();
         std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = ClassCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(className, categoryName);
         
         llvm::outs() << "TraverseObjCCategoryImplDecl " << realName << "\n";
         
@@ -398,7 +156,7 @@ public:
     
     bool TraverseObjCMethodDecl(ObjCMethodDecl *decl)
     {
-        if (!isNeedObfuscateClassName(decl, _sm, true, true)) {
+        if (!gHelper.isNeedObfuscate(decl, true, true)) {
             return true;
         }
         
@@ -409,15 +167,15 @@ public:
         if (parentKind == Decl::ObjCInterface) {
             ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
             if (interfaceDecl) {
-                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
-                    AddReplacement(decl, _sm, _replacementMap);
+                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
+                    gHelper.addReplacement(decl);
                 }
             }
         } else if (parentKind == Decl::ObjCImplementation) {
             ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
             if (interfaceDecl) {
-                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
-                    AddReplacement(decl, _sm, _replacementMap);
+                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
+                    gHelper.addReplacement(decl);
                 }
             }
             
@@ -430,24 +188,25 @@ public:
             
             std::string catName = category->getNameAsString();
             std::string clsName = interfaceDecl->getNameAsString();
-            std::string realName = ClassCategoryName(clsName, catName);
+            std::string realName = CSHelper::classCategoryName(clsName, catName);
             
-            if (gCache.addClsNameSelector(realName, selector, ReplaceSelectorName(selector))) {
-                AddReplacement(decl, _sm, _replacementMap);
+            if (gCache.addClsNameSelector(realName, selector, gHelper.newSelectorName(selector))) {
+                gHelper.addReplacement(decl);
             }
             
         } else if (parentKind == Decl::ObjCProtocol) {
             ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
             if (protocolDecl) {
-                if (gCache.addClsNameSelector(protocolDecl->getNameAsString(), selector, ReplaceSelectorName(selector))) {
-                    AddReplacement(decl, _sm, _replacementMap);
+                if (gCache.addClsNameSelector(protocolDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
+                    gHelper.addReplacement(decl);
                 }
             }
         }
         return true;
     }
     
-    bool VisitObjCInterfaceDecl(ObjCInterfaceDecl *decl) {
+    bool VisitObjCInterfaceDecl(ObjCInterfaceDecl *decl)
+    {
         if (!decl->hasDefinition() || decl->getDefinition() != decl) {
             return true;
         }
@@ -456,23 +215,24 @@ public:
         return true;
     }
     
-    bool VisitObjCCategoryDecl(ObjCCategoryDecl * decl) {
-        
+    bool VisitObjCCategoryDecl(ObjCCategoryDecl * decl)
+    {
         std::string categoryName = decl->getNameAsString();
         std::string className = decl->getClassInterface()->getNameAsString();
         
-        std::string name = ClassCategoryName(className, categoryName);
+        std::string name = CSHelper::classCategoryName(className, categoryName);
         gCache.addClsName(name);
         
         return true;
     }
     
-    bool VisitObjCImplementationDecl(ObjCImplementationDecl *decl) {
-        
+    bool VisitObjCImplementationDecl(ObjCImplementationDecl *decl)
+    {
         return true;
     }
     
-    bool VisitObjCProtocolDecl(const ObjCProtocolDecl *decl) {
+    bool VisitObjCProtocolDecl(const ObjCProtocolDecl *decl)
+    {
         if (!decl->hasDefinition() || decl->getDefinition() != decl) {
             return true;
         }
@@ -485,22 +245,16 @@ public:
 class ObjCMessageExprVisitor : public RecursiveASTVisitor<ObjCMessageExprVisitor>
 {
 private:
-    SourceManager &_sm;
     ASTContext *_astContext;
-    
-    std::map<std::string, Replacements> &_replacementMap;
+    SourceManager &_sm;
     bool _isTraverseImp;
     
 public:
-    ObjCMessageExprVisitor(SourceManager &sm, std::map<std::string, Replacements> &rpsMap )
-    : _sm(sm)
-    , _replacementMap(rpsMap)
-    , _isTraverseImp(false)
-    {
-        
-    }
+    ObjCMessageExprVisitor(SourceManager &sm)
+    : _sm(sm), _isTraverseImp(false) {}
     
-    void setContext(ASTContext *context) {
+    void setContext(ASTContext *context)
+    {
         _astContext = context;
     }
     
@@ -510,21 +264,21 @@ public:
           return true;
         }
         
-        if ( _isTraverseImp || DC->isTranslationUnit() || DC->getDeclKind() == Decl::ObjCImplementation
+        if (_isTraverseImp || DC->isTranslationUnit() || DC->getDeclKind() == Decl::ObjCImplementation
             || DC->getDeclKind() == Decl::ObjCCategoryImpl) {
             for (auto *Child : DC->decls()) {
-              if (!canIgnoreChildDeclWhileTraversingDeclContext(Child)) {
+                if (!canIgnoreChildDeclWhileTraversingDeclContext(Child)) {
                   TraverseDecl(Child);
-              }
+                }
             }
         }
         
         return true;
     }
     
-    bool TraverseObjCImplementationDecl(ObjCImplementationDecl *decl) {
-        
-        StringRef filePath = GetFilename(decl, _sm);
+    bool TraverseObjCImplementationDecl(ObjCImplementationDecl *decl)
+    {
+        StringRef filePath = gHelper.getFilename(decl);
         if(!CSUtils::isUserSourceCode(filePath.str(), false)) {
             return true;
         }
@@ -540,8 +294,8 @@ public:
         return ret;
     }
     
-    bool TraverseObjCCategoryImplDecl(ObjCCategoryImplDecl *decl) {
-        
+    bool TraverseObjCCategoryImplDecl(ObjCCategoryImplDecl *decl)
+    {
         _isTraverseImp = true;
         
         bool ret =  RecursiveASTVisitor<ObjCMessageExprVisitor>::TraverseObjCCategoryImplDecl(decl);
@@ -551,8 +305,8 @@ public:
         return ret;
     }
     
-    bool VisitObjCMessageExpr(ObjCMessageExpr *expr) {
-     
+    bool VisitObjCMessageExpr(ObjCMessageExpr *expr)
+    {
         ObjCMethodDecl *mDecl = expr->getMethodDecl();
         if (!mDecl) {
             return true;
@@ -580,7 +334,7 @@ public:
             return true;
         }
         
-        if (!isNeedObfuscateClassName(mDecl, _sm, false, !isDefineInMacro)) {
+        if (!gHelper.isNeedObfuscate(mDecl, false, !isDefineInMacro)) {
             return true;
         }
         
@@ -607,14 +361,14 @@ public:
             if (parentKind == Decl::ObjCCategory) {
                 auto *tmp = cast<ObjCCategoryDecl>(parent);
                 if (tmp) {
-                    interfaceName = ClassCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
+                    interfaceName = CSHelper::classCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
                     fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
                 }
             }
             else if (parentKind == Decl::ObjCCategoryImpl) {
                 auto *tmp = cast<ObjCCategoryImplDecl>(parent);
                 if (tmp) {
-                    interfaceName = ClassCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
+                    interfaceName = CSHelper::classCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
                     fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
                 }
             }
@@ -639,35 +393,31 @@ public:
                 return true;
             }
             if (CSUtils::isUserSourceCode(fileName, false)) {
-                AddReplacement(expr, _sm, _replacementMap, *_astContext);
+                gHelper.addReplacement(expr, *_astContext);
            }
         }
         
         return true;
-            
     }
 };
 
 class CodeStyleASTConsumer: public ASTConsumer
 {
 private:
-    ObjCMethodDeclVisitor   methodVisitor;
-    ObjCMessageExprVisitor  messageExprVisitor;
+    ObjCMethodDeclVisitor methodVisitor;
+    ObjCMessageExprVisitor messageExprVisitor;
     
 public:
-    CodeStyleASTConsumer( std::map<std::string, Replacements> & replacementsMap, CompilerInstance &CI, StringRef file)
-    : methodVisitor(CI.getSourceManager(), replacementsMap)
-    , messageExprVisitor(CI.getSourceManager(), replacementsMap)
+    CodeStyleASTConsumer(std::map<std::string, Replacements> &replacementsMap, CompilerInstance &CI, StringRef file)
+    : methodVisitor(CI.getSourceManager())
+    , messageExprVisitor(CI.getSourceManager()) {
+        gHelper.setSourceManager(&CI.getSourceManager());
+    }
+    
+    ~CodeStyleASTConsumer() {}
+    
+    void HandleTranslationUnit(ASTContext &context)
     {
-        
-    }
-    
-    ~CodeStyleASTConsumer() {
-        
-    }
-    
-    void HandleTranslationUnit(ASTContext &context) {
-        
         long long start =  CSUtils::getCurrentTimestamp();
         
         methodVisitor.TraverseTranslationUnitDecl(context.getTranslationUnitDecl());
@@ -681,15 +431,11 @@ public:
 
 class CodeStyleSelectorVisitor : public RecursiveASTVisitor<CodeStyleSelectorVisitor>
 {
-private:
-    SourceManager &_sm;
 public:
-    explicit CodeStyleSelectorVisitor(SourceManager &sm) : _sm(sm)
-    {}
-    
     bool shouldVisitImplicitCode() const { return true; }
     
-    bool VisitObjCSelectorExpr(ObjCSelectorExpr *expr) {
+    bool VisitObjCSelectorExpr(ObjCSelectorExpr *expr)
+    {
         Selector sel = expr->getSelector();
         
         llvm::outs() << "SelectorExpr" << "\t" << sel.getAsString() << "\n";
@@ -705,10 +451,10 @@ class CodeStyleSelectorConsumer: public ASTConsumer
 private:
     CodeStyleSelectorVisitor visitor;
 public:
-    explicit CodeStyleSelectorConsumer(CompilerInstance &CI)
-    : visitor(CI.getSourceManager()) {}
+    explicit CodeStyleSelectorConsumer(CompilerInstance &CI) {}
     
-    virtual void HandleTranslationUnit(ASTContext &Context) {
+    virtual void HandleTranslationUnit(ASTContext &Context)
+    {
         visitor.TraverseDecl(Context.getTranslationUnitDecl());
     }
 };
@@ -716,15 +462,12 @@ public:
 class CodeStyleASTAction: public ASTFrontendAction
 {
 private:
-    RefactoringTool & _refactoringTool;
+    RefactoringTool &_refactoringTool;
     
 public:
     CodeStyleASTAction (RefactoringTool &refactoingTool)
-    : ASTFrontendAction()
-    , _refactoringTool(refactoingTool)
-    {
-        
-    }
+    : ASTFrontendAction(), _refactoringTool(refactoingTool) {}
+    
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef iFile) override
     {
         if (!CSUtils::isUserSourceCode(iFile.str(), false)) {
@@ -737,7 +480,7 @@ public:
         if (runSelectorComsumer) {
             return unique_ptr<CodeStyleSelectorConsumer> (new CodeStyleSelectorConsumer(CI));
         }
-        return unique_ptr<CodeStyleASTConsumer> (new CodeStyleASTConsumer( _refactoringTool.getReplacements(), CI, iFile));
+        return unique_ptr<CodeStyleASTConsumer> (new CodeStyleASTConsumer(_refactoringTool.getReplacements(), CI, iFile));
     }
     
     bool ParseArgs(const CompilerInstance &ci, const std::vector<std::string> &args)
@@ -753,15 +496,11 @@ private:
     
 public:
     CodeStyleActionFactory(RefactoringTool &tool)
-    : FrontendActionFactory()
-    , _refactoringTool(tool)
-    {
-        
-    }
+    : FrontendActionFactory(), _refactoringTool(tool) {}
     
     std::unique_ptr<FrontendAction> create() override
     {
-        return unique_ptr<FrontendAction>( new CodeStyleASTAction( _refactoringTool ) );
+        return unique_ptr<FrontendAction>(new CodeStyleASTAction(_refactoringTool));
     }
 };
 
@@ -779,7 +518,7 @@ void applyChangeToFiles(RefactoringTool &Tool)
     Tool.applyAllReplacements(Rewrite);
     
     for (Rewriter::buffer_iterator I = Rewrite.buffer_begin(), E = Rewrite.buffer_end(); I != E; ++I) {
-        I->second.write( llvm::outs() );
+        I->second.write(llvm::outs());
     }
     
     Rewrite.overwriteChangedFiles();
@@ -830,6 +569,9 @@ int main(int argc, const char **argv)
     }
     
     gCache.addClsName("_ObjCId_");
+    gHelper.setSelectorPrefix("sealion_");
+    gHelper.setReplacementsMap(&Tool.getReplacements());
+    gHelper.setCache(&gCache);
     
     runSelectorComsumer = false;
     if (int Result = Tool.run(factory.get())) {

@@ -39,7 +39,7 @@ void CSCache::addClsNameIntoBlackList(const std::string& clsName)
     blackListSet.insert(clsName);
 }
 
-bool CSCache::checkWhiteBlackList(const std::string &clsName)
+bool CSCache::checkWhiteBlackList(const std::string &clsName) const
 {
     if (blackListSet.find(clsName) != blackListSet.end()) {
         return false;
@@ -50,7 +50,7 @@ bool CSCache::checkWhiteBlackList(const std::string &clsName)
     return true;
 }
 
-bool CSCache::ignoreSelector(const std::string& selector)
+bool CSCache::ignoreSelector(const std::string& selector) const
 {
     return selectorSet.find(selector) != selectorSet.end();
 }

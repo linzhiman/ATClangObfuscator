@@ -23,9 +23,9 @@ public:
     
     void addClsNameIntoWhiteList(const std::string& clsName);
     void addClsNameIntoBlackList(const std::string& clsName);
-    bool checkWhiteBlackList(const std::string &clsName);
+    bool checkWhiteBlackList(const std::string &clsName) const;
     
-    bool ignoreSelector(const std::string& selector);
+    bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
     void loadIgnoreSelectors(const std::string &filePath);
     void saveIgnoreSelectors(const std::string &filePath);
