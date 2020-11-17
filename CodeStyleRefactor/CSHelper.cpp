@@ -15,6 +15,20 @@ std::string CSHelper::classCategoryName(const std::string &className, const std:
     return className + "(" + categoryName + ")";
 }
 
+std::string CSHelper::classCategoryName(ObjCCategoryDecl *decl)
+{
+    std::string categoryName = decl->getNameAsString();
+    std::string className = decl->getClassInterface()->getNameAsString();
+    return CSHelper::classCategoryName(className, categoryName);
+}
+
+std::string CSHelper::classCategoryName(ObjCCategoryImplDecl *decl)
+{
+    std::string categoryName = decl->getNameAsString();
+    std::string className = decl->getClassInterface()->getNameAsString();
+    return CSHelper::classCategoryName(className, categoryName);
+}
+
 void CSHelper::setSelectorPrefix(const std::string& prefix)
 {
     mGetterPrefix = prefix;
@@ -74,19 +88,19 @@ SourceLocation CSHelper::getLoc(DeclContext *declContext)
     return loc;
 }
 
-StringRef CSHelper::getFilename(ObjCMethodDecl *decl)
+std::string CSHelper::getFilename(ObjCMethodDecl *decl)
 {
-    return mSourceManager->getFilename(getLoc(decl));
+    return mSourceManager->getFilename(getLoc(decl)).str();
 }
 
-StringRef CSHelper::getFilename(ObjCImplementationDecl *decl)
+std::string CSHelper::getFilename(ObjCImplementationDecl *decl)
 {
-    return mSourceManager->getFilename(getLoc(decl));
+    return mSourceManager->getFilename(getLoc(decl)).str();
 }
 
-StringRef CSHelper::getFilename(ObjCProtocolDecl *decl)
+std::string CSHelper::getFilename(ObjCProtocolDecl *decl)
 {
-    return mSourceManager->getFilename(getLoc(decl));
+    return mSourceManager->getFilename(getLoc(decl)).str();
 }
 
 bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList)

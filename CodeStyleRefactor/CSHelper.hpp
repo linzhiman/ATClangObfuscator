@@ -25,6 +25,8 @@ class CSHelper
 {
 public:
     static std::string classCategoryName(const std::string &className, const std::string &categoryName);
+    static std::string classCategoryName(ObjCCategoryDecl *decl);
+    static std::string classCategoryName(ObjCCategoryImplDecl *decl);
     
     void setSelectorPrefix(const std::string& prefix);
     void setSourceManager(SourceManager *sm);
@@ -34,9 +36,9 @@ public:
     std::string newSelectorName(const std::string& selector);
 
     SourceLocation getLoc(DeclContext *declContext);
-    StringRef getFilename(ObjCMethodDecl *decl);
-    StringRef getFilename(ObjCImplementationDecl *decl);
-    StringRef getFilename(ObjCProtocolDecl *decl);
+    std::string getFilename(ObjCMethodDecl *decl);
+    std::string getFilename(ObjCImplementationDecl *decl);
+    std::string getFilename(ObjCProtocolDecl *decl);
 
     bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList);
 

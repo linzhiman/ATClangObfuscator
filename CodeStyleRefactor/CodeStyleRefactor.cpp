@@ -158,9 +158,7 @@ public:
             return true;
         }
         
-        std::string categoryName = decl->getNameAsString();
-        std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = CSHelper::classCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(decl);
         
         if (gCache.containClsName(realName)) {
             return true;
@@ -173,9 +171,7 @@ public:
     
     bool VisitObjCCategoryDecl(ObjCCategoryDecl *decl)
     {
-        std::string categoryName = decl->getNameAsString();
-        std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = CSHelper::classCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(decl);
         
         gCache.addClsName(realName);
         
@@ -186,9 +182,7 @@ public:
     
     bool TraverseObjCCategoryImplDecl(ObjCCategoryImplDecl *decl)
     {
-        std::string categoryName = decl->getNameAsString();
-        std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = CSHelper::classCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(decl);
         
         llvm::outs() << "TraverseObjCCategoryImplDecl " << realName << "\n";
         
@@ -203,9 +197,7 @@ public:
     
     bool VisitObjCCategoryImplDecl(ObjCCategoryImplDecl *decl)
     {
-        std::string categoryName = decl->getNameAsString();
-        std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = CSHelper::classCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(decl);
         
         llvm::outs() << "VisitObjCCategoryImplDecl " << realName << "\n";
         
@@ -240,13 +232,10 @@ public:
             return RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCMethodDecl(decl);
             
         } else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-            ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
             ObjCCategoryDecl  *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent)
                                                                            : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
-            
-            std::string catName = category->getNameAsString();
-            std::string clsName = interfaceDecl->getNameAsString();
-            std::string realName = CSHelper::classCategoryName(clsName, catName);
+
+            std::string realName = CSHelper::classCategoryName(category);
             
             if (gCache.addClsNameSelector(realName, selector, gHelper.newSelectorName(selector))) {
                 gHelper.addReplacement(decl);
@@ -318,9 +307,7 @@ public:
     
     bool TraverseObjCCategoryImplDecl(ObjCCategoryImplDecl *decl)
     {
-        std::string categoryName = decl->getNameAsString();
-        std::string className = decl->getClassInterface()->getNameAsString();
-        std::string realName = CSHelper::classCategoryName(className, categoryName);
+        std::string realName = CSHelper::classCategoryName(decl);
         
         llvm::outs() << "TraverseObjCCategoryImplDecl " << realName << "\n";
         
@@ -389,14 +376,14 @@ public:
             if (parentKind == Decl::ObjCCategory) {
                 auto *tmp = cast<ObjCCategoryDecl>(parent);
                 if (tmp) {
-                    interfaceName = CSHelper::classCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
+                    interfaceName = CSHelper::classCategoryName(tmp);
                     fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
                 }
             }
             else if (parentKind == Decl::ObjCCategoryImpl) {
                 auto *tmp = cast<ObjCCategoryImplDecl>(parent);
                 if (tmp) {
-                    interfaceName = CSHelper::classCategoryName(tmp->getClassInterface()->getNameAsString(), tmp->getNameAsString());
+                    interfaceName = CSHelper::classCategoryName(tmp);
                     fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
                 }
             }
