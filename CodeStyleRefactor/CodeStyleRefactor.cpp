@@ -63,13 +63,6 @@ public:
         }
         return true;
     }
-
-    bool TraverseImportDecl(ImportDecl *decl)
-    {
-        llvm::outs() << "TraverseImportDecl " << decl->getImportedModule()->getFullModuleName() << "\n";
-        
-        return true;
-    }
     
     bool TraverseObjCProtocolDecl(ObjCProtocolDecl *decl)
     {
@@ -183,7 +176,7 @@ public:
         
         _isTraverseImp = true;
         
-        bool ret =   RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCCategoryImplDecl(decl);
+        bool ret = RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCCategoryImplDecl(decl);
         
         _isTraverseImp = false;
         
@@ -423,7 +416,7 @@ public:
         messageExprVisitor.setContext(&context);
         messageExprVisitor.TraverseTranslationUnitDecl(context.getTranslationUnitDecl());
         
-        llvm::outs() << "TranslationUnit finish:" << CSUtils::getCurrentTimestamp() - start << "\n";
+        llvm::outs() << "\nTranslationUnit finish:" << CSUtils::getCurrentTimestamp() - start << "\n";
     }
 };
 
@@ -431,6 +424,51 @@ class CodeStyleSelectorVisitor : public RecursiveASTVisitor<CodeStyleSelectorVis
 {
 public:
     bool shouldVisitImplicitCode() const { return true; }
+    
+    bool TraverseObjCMethodDecl(ObjCMethodDecl *decl)
+    {
+        Selector selector = decl->getSelector();
+        DeclContext *parent = decl->getParent();
+        Decl::Kind parentKind = parent->getDeclKind();
+
+        if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
+            ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
+            if (interfaceDecl) {
+                if (decl->isOverriding()) {
+                    const ObjCProtocolList &protocolList = interfaceDecl->getReferencedProtocols();
+                    for (ObjCProtocolDecl *protocol : protocolList) {
+                        if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                            StringRef filePath = gHelper.getFilename(protocol);
+                            if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+                                if (decl->getCanonicalDecl()->isPropertyAccessor()) {
+                                    gCache.addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+            ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
+            if (decl->isOverriding()) {
+                const ObjCProtocolList &protocolList = category->getReferencedProtocols();
+                for (ObjCProtocolDecl *protocol : protocolList) {
+                    if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                        StringRef filePath = gHelper.getFilename(protocol);
+                        if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+                            if (decl->getCanonicalDecl()->isPropertyAccessor()) {
+                                gCache.addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return RecursiveASTVisitor<CodeStyleSelectorVisitor>::TraverseObjCMethodDecl(decl);
+    }
     
     bool VisitObjCSelectorExpr(ObjCSelectorExpr *expr)
     {
@@ -449,7 +487,9 @@ class CodeStyleSelectorConsumer: public ASTConsumer
 private:
     CodeStyleSelectorVisitor visitor;
 public:
-    explicit CodeStyleSelectorConsumer(CompilerInstance &CI) {}
+    explicit CodeStyleSelectorConsumer(CompilerInstance &CI) {
+        gHelper.setSourceManager(&CI.getSourceManager());
+    }
     
     virtual void HandleTranslationUnit(ASTContext &Context)
     {
@@ -469,11 +509,11 @@ public:
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override
     {
         if (!CSUtils::isUserSourceCode(InFile.str(), false)) {
-            llvm::outs() << "[Ignore] file:" << InFile.str() << "\n";
+            llvm::outs() << "\n[Ignore] file:" << InFile.str() << "\n";
             return unique_ptr<ASTConsumer>();
         }
         
-        llvm::outs() << " [Analize] file:" << InFile.str() << "\n";
+        llvm::outs() << "\n[Analize] file:" << InFile.str() << "\n";
         
         if (runSelectorComsumer) {
             return unique_ptr<CodeStyleSelectorConsumer> (new CodeStyleSelectorConsumer(CI));
@@ -537,7 +577,7 @@ int main(int argc, const char **argv)
         }
     }
     else {
-        llvm::outs() << "[Error] only support one source path";
+        llvm::outs() << "\n[Error] only support one source path";
         return 0;
     }
     
@@ -558,9 +598,10 @@ int main(int argc, const char **argv)
         if (int Result = tool.run(factory.get())) {
             return Result;
         }
-        gCache.saveIgnoreSelectors(selectorFilePath);
+//        gCache.saveIgnoreSelectors(selectorFilePath);
     }
     
+    gCache.clearClsName();
     gCache.addClsName("_ObjCId_");
     gHelper.setSelectorPrefix("sealion_");
     gHelper.setReplacementsMap(&tool.getReplacements());
@@ -570,9 +611,9 @@ int main(int argc, const char **argv)
     if (int Result = tool.run(factory.get())) {
         return Result;
     }
-    
+
     applyChangeToFiles(tool);
     
-    llvm::outs() << "[Finish] total files:" << analizeFiles.size() <<" cost time:" << CSUtils::getCurrentTimestamp() - start << "(ms)\n";
+    llvm::outs() << "\n[Finish] total files:" << analizeFiles.size() <<" cost time:" << CSUtils::getCurrentTimestamp() - start << "(ms)\n";
     return 0;
 }

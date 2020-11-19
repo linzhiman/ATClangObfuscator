@@ -151,6 +151,9 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
             const ObjCProtocolList &protocolList = interfaceDecl->getReferencedProtocols();
             for (ObjCProtocolDecl *protocol : protocolList) {
                 if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                    if (mCache->ignoreProtocolSelector(protocol->getNameAsString(), selector.getAsString())) {
+                        return false;
+                    }
                     StringRef filePath = getFilename(protocol);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
                         return checkList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
@@ -183,6 +186,9 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
             const ObjCProtocolList &protocolList = category->getReferencedProtocols();
             for (ObjCProtocolDecl *protocol : protocolList) {
                 if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                    if (mCache->ignoreProtocolSelector(protocol->getNameAsString(), selector.getAsString())) {
+                        return false;
+                    }
                     StringRef filePath = getFilename(protocol);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
                         return checkList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
@@ -198,6 +204,9 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
     }
     else if (parentKind == Decl::ObjCProtocol) {
         ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
+        if (mCache->ignoreProtocolSelector(protocolDecl->getNameAsString(), selector.getAsString())) {
+            return false;
+        }
         return checkList ? mCache->checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
     }
     else {
@@ -228,12 +237,12 @@ void CSHelper::addReplacement(Selector sel, bool isImplicitProperty, SourceLocat
     }
     
     if (mSourceManager->isWrittenInScratchSpace(loc)) {
-        llvm::outs() << "\t\t" << "AddReplacement Ignore ScratchSpace" << "\t" << selName << "\n";
+        llvm::outs() << "\t\t" << "AddReplacement\tIgnore ScratchSpace" << "\t" << selName << "\n";
         return;
     }
     
     if (mCache->ignoreSelector(selName)) {
-        llvm::outs() << "\t\t" << "AddReplacement Ignore" << "\t" << selName << "\n";
+        llvm::outs() << "\t\t" << "AddReplacement\tIgnore" << "\t" << selName << "\n";
         return;
     }
     

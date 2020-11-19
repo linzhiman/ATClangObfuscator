@@ -20,10 +20,14 @@ public:
     bool containClsName(const std::string& clsName);
     void addClsName(const std::string& clsName);
     bool addClsNameSelector(const std::string& clsName, const std::string& selector, const std::string& newSelector);
+    void clearClsName();
     
     void addClsNameIntoWhiteList(const std::string& clsName);
     void addClsNameIntoBlackList(const std::string& clsName);
     bool checkWhiteBlackList(const std::string &clsName) const;
+    
+    bool ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const;
+    void addIgnoreProtocolSelector(const std::string& protocol, const std::string& selector);
     
     bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
@@ -33,6 +37,9 @@ public:
 private:
     //类名:方法列表
     std::map<std::string, std::map<std::string, std::string>> clsMethodMap;
+    
+    //协议名:方法列表
+    std::map<std::string, std::set<std::string>> protocolSelectorMap;
     
     //selector列表
     std::set<std::string> selectorSet;
