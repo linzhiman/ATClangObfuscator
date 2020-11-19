@@ -347,7 +347,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CC = "";
 				CODE_SIGN_STYLE = Automatic;
+				CXX = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ATClangObfuscatorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -365,7 +367,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CC = "";
 				CODE_SIGN_STYLE = Automatic;
+				CXX = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ATClangObfuscatorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -441,9 +445,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CC = "/Users/linzhiman/llvm-project-apple-stable-20200714/build/Release/bin/clang";
 				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = NO;
+				CXX = "/Users/linzhiman/llvm-project-apple-stable-20200714/build/Release/bin/clang";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ATClangObfuscatorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
