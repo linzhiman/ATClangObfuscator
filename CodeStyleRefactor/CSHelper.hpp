@@ -37,8 +37,8 @@ public:
 
     SourceLocation getLoc(DeclContext *declContext);
     std::string getFilename(ObjCMethodDecl *decl);
-    std::string getFilename(ObjCImplementationDecl *decl);
-    std::string getFilename(ObjCProtocolDecl *decl);
+    std::string getFilename(ObjCContainerDecl *decl);
+    std::string getFilename(ObjCMessageExpr *expr);
 
     bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList);
 

@@ -35,6 +35,10 @@ bool CSUtils::isUserSourceCode(const std::string filename, bool checkIgnoreFolde
         return false;
     }
     
+    if (filename.find("/Xcode/DerivedData/") != filename.npos) {
+        return false;
+    }
+    
     if (filename.find(".build/DerivedSources/") != filename.npos) {
         return false;
     }

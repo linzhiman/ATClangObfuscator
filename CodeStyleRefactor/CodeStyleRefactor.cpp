@@ -43,12 +43,10 @@ CSHelper gHelper;
 class ObjCMethodDeclVisitor : public RecursiveASTVisitor<ObjCMethodDeclVisitor>
 {
 private:
-    SourceManager &_sm;
     bool _isTraverseImp;
     
 public:
-    ObjCMethodDeclVisitor(SourceManager &sm)
-    : _sm(sm) {}
+    ObjCMethodDeclVisitor(SourceManager &sm) {}
     
     bool TraverseDeclContextHelper(DeclContext *DC)
     {
@@ -75,8 +73,7 @@ public:
     
     bool TraverseObjCProtocolDecl(ObjCProtocolDecl *decl)
     {
-        StringRef filePath = _sm.getFilename(decl->getSourceRange().getBegin());
-        if (!CSUtils::isUserSourceCode(filePath.str(), true)) {
+        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -97,15 +94,14 @@ public:
         
         gCache.addClsName(decl->getNameAsString());
         
-        llvm::outs() << "VisitObjCProtocolDecl " << decl->getNameAsString() << "\n";
+        llvm::outs() << "\t" << "VisitObjCProtocolDecl " << decl->getNameAsString() << "\n";
         
         return true;
     }
     
     bool TraverseObjCInterfaceDecl(ObjCInterfaceDecl *decl)
     {
-        StringRef filePath = _sm.getFilename(decl->getSourceRange().getBegin());
-        if (!CSUtils::isUserSourceCode(filePath.str(), true)) {
+        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -126,7 +122,7 @@ public:
         
         gCache.addClsName(decl->getNameAsString());
         
-        llvm::outs() << "VisitObjCInterfaceDecl " << decl->getNameAsString() << "\n";
+        llvm::outs() << "\t" << "VisitObjCInterfaceDecl " << decl->getNameAsString() << "\n";
         
         return true;
     }
@@ -146,15 +142,14 @@ public:
     
     bool VisitObjCImplementationDecl(ObjCImplementationDecl *decl)
     {
-        llvm::outs() << "VisitObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        llvm::outs() << "\t" << "VisitObjCImplementationDecl " << decl->getNameAsString() << "\n";
         
         return true;
     }
     
     bool TraverseObjCCategoryDecl(ObjCCategoryDecl *decl)
     {
-        StringRef filePath = _sm.getFilename(decl->getSourceRange().getBegin());
-        if (!CSUtils::isUserSourceCode(filePath.str(), true)) {
+        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -175,7 +170,7 @@ public:
         
         gCache.addClsName(realName);
         
-        llvm::outs() << "VisitObjCCategoryDecl " << realName << "\n";
+        llvm::outs() << "\t" << "VisitObjCCategoryDecl " << realName << "\n";
         
         return true;
     }
@@ -199,7 +194,7 @@ public:
     {
         std::string realName = CSHelper::classCategoryName(decl);
         
-        llvm::outs() << "VisitObjCCategoryImplDecl " << realName << "\n";
+        llvm::outs() << "\t" << "VisitObjCCategoryImplDecl " << realName << "\n";
         
         return true;
     }
@@ -211,40 +206,36 @@ public:
         }
         
         std::string selector = decl->getSelector().getAsString();
+        std::string newSelector = gHelper.newSelectorName(selector);
         
         DeclContext *parent = decl->getParent();
         Decl::Kind parentKind = parent->getDeclKind();
-        if (parentKind == Decl::ObjCInterface) {
-            ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
+        
+        if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
+            ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
             if (interfaceDecl) {
-                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
+                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, newSelector)) {
                     gHelper.addReplacement(decl);
                 }
             }
-        } else if (parentKind == Decl::ObjCImplementation) {
-            ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
-            if (interfaceDecl) {
-                if (gCache.addClsNameSelector(interfaceDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
-                    gHelper.addReplacement(decl);
-                }
+            if (parentKind == Decl::ObjCImplementation) {
+                return RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCMethodDecl(decl);
             }
-            
-            return RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCMethodDecl(decl);
-            
-        } else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-            ObjCCategoryDecl  *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent)
+        }
+        else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+            ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent)
                                                                            : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
 
             std::string realName = CSHelper::classCategoryName(category);
             
-            if (gCache.addClsNameSelector(realName, selector, gHelper.newSelectorName(selector))) {
+            if (gCache.addClsNameSelector(realName, selector, newSelector)) {
                 gHelper.addReplacement(decl);
             }
-            
-        } else if (parentKind == Decl::ObjCProtocol) {
+        }
+        else if (parentKind == Decl::ObjCProtocol) {
             ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
             if (protocolDecl) {
-                if (gCache.addClsNameSelector(protocolDecl->getNameAsString(), selector, gHelper.newSelectorName(selector))) {
+                if (gCache.addClsNameSelector(protocolDecl->getNameAsString(), selector, newSelector)) {
                     gHelper.addReplacement(decl);
                 }
             }
@@ -289,8 +280,7 @@ public:
     
     bool TraverseObjCImplementationDecl(ObjCImplementationDecl *decl)
     {
-        StringRef filePath = gHelper.getFilename(decl);
-        if (!CSUtils::isUserSourceCode(filePath.str(), false)) {
+        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), false)) {
             return true;
         }
         
@@ -353,14 +343,8 @@ public:
             return true;
         }
         
-        llvm::outs() << "call message: " << mDecl->getNameAsString() << "\n";
-        
         DeclContext *parent = mDecl->getParent();
         Decl::Kind parentKind = parent->getDeclKind();
-        
-        if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-            llvm::outs() << "call ObjCCategory method: " << mDecl->getSelector().getAsString() << "\n";
-        }
         
         std::string interfaceName;
         std::string fileName;
@@ -369,7 +353,7 @@ public:
             ObjCInterfaceDecl *interface = mDecl->isClassMethod() ? mDecl->getClassInterface() : expr->getReceiverInterface();
             if (interface) {
                 interfaceName = interface->getNameAsString();
-                fileName = _sm.getFilename(interface->getSourceRange().getBegin()).str();
+                fileName = gHelper.getFilename(interface);
             }
         }
         else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
@@ -377,14 +361,14 @@ public:
                 auto *tmp = cast<ObjCCategoryDecl>(parent);
                 if (tmp) {
                     interfaceName = CSHelper::classCategoryName(tmp);
-                    fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
+                    fileName = gHelper.getFilename(tmp);
                 }
             }
             else if (parentKind == Decl::ObjCCategoryImpl) {
                 auto *tmp = cast<ObjCCategoryImplDecl>(parent);
                 if (tmp) {
                     interfaceName = CSHelper::classCategoryName(tmp);
-                    fileName = _sm.getFilename(tmp->getSourceRange().getBegin()).str();
+                    fileName = gHelper.getFilename(tmp);
                 }
             }
         }
@@ -392,15 +376,15 @@ public:
             ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
             if (protocolDecl) {
                 interfaceName = protocolDecl->getNameAsString();
-                fileName = _sm.getFilename(protocolDecl->getSourceRange().getBegin()).str();
+                fileName = gHelper.getFilename(protocolDecl);
             }
         }
         else if (expr->getReceiverType()->isObjCIdType()) {
             interfaceName = "_ObjCId_";
-            fileName = _sm.getFilename(expr->getSelectorStartLoc()).str();
+            fileName = gHelper.getFilename(expr);
         }
         else {
-            llvm::outs() <<"[!NotHandle] " << expr->getSelector().getAsString() << "\n";
+            llvm::outs() << "\t" << "[!NotHandle] " << expr->getSelector().getAsString() << "\n";
         }
         
         if (interfaceName.length() > 0) {
@@ -409,9 +393,8 @@ public:
             }
             if (CSUtils::isUserSourceCode(fileName, false)) {
                 gHelper.addReplacement(expr, *_astContext);
-           }
+            }
         }
-        
         return true;
     }
 };

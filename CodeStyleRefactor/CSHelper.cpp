@@ -71,6 +71,10 @@ SourceLocation CSHelper::getLoc(DeclContext *declContext)
         auto *tmp = cast<ObjCMethodDecl>(declContext);
         loc = tmp->getSelectorStartLoc();
     }
+    else if (declContext->getDeclKind() == Decl::ObjCInterface) {
+        auto *tmp = cast<ObjCInterfaceDecl>(declContext);
+        loc = tmp->getSourceRange().getBegin();
+    }
     else if (declContext->getDeclKind() == Decl::ObjCImplementation) {
         auto *tmp = cast<ObjCImplementationDecl>(declContext);
         loc = tmp->getSourceRange().getBegin();
@@ -93,14 +97,18 @@ std::string CSHelper::getFilename(ObjCMethodDecl *decl)
     return mSourceManager->getFilename(getLoc(decl)).str();
 }
 
-std::string CSHelper::getFilename(ObjCImplementationDecl *decl)
+std::string CSHelper::getFilename(ObjCContainerDecl *decl)
 {
     return mSourceManager->getFilename(getLoc(decl)).str();
 }
 
-std::string CSHelper::getFilename(ObjCProtocolDecl *decl)
+std::string CSHelper::getFilename(ObjCMessageExpr *expr)
 {
-    return mSourceManager->getFilename(getLoc(decl)).str();
+    SourceLocation loc = expr->getSelectorStartLoc();
+    if (mSourceManager->isMacroBodyExpansion(loc) || mSourceManager->isMacroArgExpansion(loc)) {
+        loc = mSourceManager->getSpellingLoc(loc);
+    }
+    return mSourceManager->getFilename(loc).str();
 }
 
 bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList)
@@ -184,10 +192,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
             }
         }
         else {
-            ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
-            std::string clsName = interfaceDecl->getNameAsString();
-            std::string categoryName = category->getNameAsString();
-            std::string realName = CSHelper::classCategoryName(clsName, categoryName);
+            std::string realName = CSHelper::classCategoryName(category);
             return checkList ? mCache->checkWhiteBlackList(realName) : true;
         }
     }
@@ -196,7 +201,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
         return checkList ? mCache->checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
     }
     else {
-        llvm::outs() << "isNeedObfuscate" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
+        llvm::outs() << "\t\t"  << "isNeedObfuscate" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
     }
     
     return false;
@@ -204,7 +209,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
 
 void CSHelper::addReplacement(const std::string &filePath, const Replacement &replace)
 {
-    llvm::outs() << "addReplacement" << "\t" << replace.toString() << "\n";
+    llvm::outs() << "\t\t" << "addReplacement" << "\t" << replace.toString() << "\n";
     
     if (mRpsMap->find(filePath) != mRpsMap->end()) {
         llvm::Error err = (*mRpsMap)[filePath].add(replace);
@@ -223,12 +228,12 @@ void CSHelper::addReplacement(Selector sel, bool isImplicitProperty, SourceLocat
     }
     
     if (mSourceManager->isWrittenInScratchSpace(loc)) {
-        llvm::outs() << "AddReplacement Ignore ScratchSpace" << "\t" << selName << "\n";
+        llvm::outs() << "\t\t" << "AddReplacement Ignore ScratchSpace" << "\t" << selName << "\n";
         return;
     }
     
     if (mCache->ignoreSelector(selName)) {
-        llvm::outs() << "AddReplacement Ignore" << "\t" << selName << "\n";
+        llvm::outs() << "\t\t" << "AddReplacement Ignore" << "\t" << selName << "\n";
         return;
     }
     
