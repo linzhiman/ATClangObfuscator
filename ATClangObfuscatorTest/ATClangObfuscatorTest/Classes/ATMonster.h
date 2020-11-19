@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 AT_EXTERN_NOTIFI(ATMonsterCreate);
 
-#define ATMasterCenter [ATMonsterCenter sharedObject]
-#define ATMasterCenterCreate [ATMasterCenter create];
+#define ATMonsterCenterObj [ATMonsterCenter sharedObject]
+#define ATMonsterCenterObjCreate [ATMonsterCenterObj create];
 
 @class ATMonster;
 

@@ -12,8 +12,6 @@
 #import "ATMonster.h"
 #import "ATMonster+Action.h"
 
-#define ATMasterCenter [ATMonsterCenter sharedObject]
-
 @implementation ATTest
 
 AT_IMPLEMENT_SINGLETON(ATTest);
@@ -52,8 +50,8 @@ AT_IMPLEMENT_SINGLETON(ATTest);
 
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
 {
-    [ATMasterCenter create];
-    ATMasterCenterCreate;
+    [ATMonsterCenterObj create];
+    ATMonsterCenterObjCreate;
 }
 
 @end
