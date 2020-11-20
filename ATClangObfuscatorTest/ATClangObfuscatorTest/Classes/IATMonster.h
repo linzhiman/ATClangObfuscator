@@ -12,8 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol IATMonster <NSObject>
 
+/// should be obfuscated
 - (void)scare;
+
+/// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
 - (void)amIBig;
+
+/// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amISmall
 - (void)amISmall;
 
 @end

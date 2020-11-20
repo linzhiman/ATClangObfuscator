@@ -9,7 +9,9 @@
 #ifndef ATMacro_h
 #define ATMacro_h
 
-//Singleton
+/// Singleton
+
+/// sharedObject should be obfuscated
 
 #define AT_DECLARE_SINGLETON \
 + (instancetype)sharedObject;
@@ -24,7 +26,7 @@
     return __instance; \
 }
 
-//Notification
+/// Notification
 #define AT_DECLARE_NOTIFI(__NAME__)  NSString* const __NAME__ = @#__NAME__;
 #define AT_EXTERN_NOTIFI(__NAME__)   extern NSString *const __NAME__;
 

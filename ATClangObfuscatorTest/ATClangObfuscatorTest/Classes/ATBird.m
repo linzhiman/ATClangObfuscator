@@ -10,19 +10,23 @@
 
 @implementation ATBird
 
+/// should be obfuscated
 - (BOOL)sleepAtNight
 {
     return YES;
 }
 
+/// should be obfuscated
 - (void)fly
 {
-    ;;
+    /// should be obfuscated
+    [self flyEx];
 }
 
-- (void)flyABC
+/// should be obfuscated
+- (void)flyEx
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
 @end

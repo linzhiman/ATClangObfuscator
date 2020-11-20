@@ -18,8 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 AT_DECLARE_SINGLETON;
 
+/// should be obfuscated
 - (void)test;
 
+/// should be obfuscated
 - (void)setMonster:(ATMonster *)monster;
 
 @end

@@ -17,6 +17,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 
 @implementation ATMonsterView
 
+/// sys method should NOT be obfuscated
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -28,36 +29,44 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
     return self;
 }
 
+/// sys method should NOT be obfuscated
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 }
 
+/// sys method should NOT be obfuscated
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 0;
 }
 
+/// sys method should NOT be obfuscated
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 0;
 }
 
+/// sys method should NOT be obfuscated
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return nil;
 }
 
+/// sys method should NOT be obfuscated
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    /// sys method should NOT be obfuscated
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+/// sys method should NOT be obfuscated
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 0;
 }
 
+/// sys method should NOT be obfuscated
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     return nil;
@@ -67,40 +76,50 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 
 @interface ATMonster ()<IATMonster>
 
+/// property should NOT be obfuscated
 @property (nonatomic, assign) BOOL amISmall;
 
 @end
 
 @implementation ATMonster
 
+/// should be obfuscated
 - (void)swim
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
+/// should be obfuscated
 - (void)fly
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
+/// should be obfuscated
 - (void)scare
 {
-    [self innerScare];
+    /// should be obfuscated
+    [self privateScare];
 }
 
-- (void)innerScare
+/// should be obfuscated
+- (void)privateScare
 {
-    [self innerScare2];
+    /// should be obfuscated
+    [self privateScareEx];
 }
 
-- (void)innerScare2
+/// should be obfuscated
+- (void)privateScareEx
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
-- (void)selectorShouldNotObfuscator
+/// should NOT be obfuscated : ATTest call this with performSelector
+- (void)run
 {
-    [self innerScare2];
+    /// should be obfuscated
+    [self privateScareEx];
 }
 
 @end
@@ -110,6 +129,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 
 AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
 
+/// should be obfuscated
 - (ATMonster *)create
 {
     AT_POST_NOTIFY(ATMonsterCreate);

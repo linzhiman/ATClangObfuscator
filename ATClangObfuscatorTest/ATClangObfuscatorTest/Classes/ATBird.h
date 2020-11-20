@@ -14,9 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ATBird : ATAnimal<IATBird>
 
+/// property should NOT be obfuscated
 @property (nonatomic, assign) BOOL full;
 
-- (void)flyABC;
+/// should be obfuscated
+- (void)flyEx;
 
 @end
 

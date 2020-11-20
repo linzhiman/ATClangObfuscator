@@ -16,7 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 AT_EXTERN_NOTIFI(ATMonsterCreate);
 
+/// should be obfuscated
 #define ATMonsterCenterObj [ATMonsterCenter sharedObject]
+
+/// should be obfuscated
 #define ATMonsterCenterObjCreate [ATMonsterCenterObj create];
 
 @class ATMonster;
@@ -27,9 +30,11 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
 
 @interface ATMonster : ATAnimal<IATFish, IATBird>
 
+/// property should NOT be obfuscated
 @property (nonatomic, assign) BOOL amIBig;
 
-- (void)selectorShouldNotObfuscator;
+/// should NOT be obfuscated : ATTest call this with performSelector
+- (void)run;
 
 @end
 
@@ -37,6 +42,7 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
 
 AT_DECLARE_SINGLETON;
 
+/// should be obfuscated
 - (ATMonster *)create;
 
 @end

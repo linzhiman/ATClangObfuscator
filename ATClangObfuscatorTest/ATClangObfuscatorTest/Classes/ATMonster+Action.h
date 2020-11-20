@@ -12,20 +12,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ATMonster (Action)
 
+/// property should NOT be obfuscated
 @property (nonatomic, assign) BOOL alive;
 
+/// should be obfuscated
 - (void)doAction;
+
+/// should be obfuscated
 + (void)doClassAction;
 
 @end
 
-@protocol IATActionBase <NSObject>
+@protocol IATActionEx <NSObject>
 
-- (NSString *)actionBaseName;
+/// should be obfuscated
+- (void)doActionEx;
 
 @end
 
-@interface ATMonster (Action2)<IATActionBase>
+@interface ATMonster (ActionEx)<IATActionEx>
 
 @end
 

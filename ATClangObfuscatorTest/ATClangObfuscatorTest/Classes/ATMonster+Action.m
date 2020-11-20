@@ -8,19 +8,21 @@
 
 #import "ATMonster+Action.h"
 
-@protocol IATActionBaseInner <NSObject>
+@protocol IATActionBase <NSObject>
 
-- (NSString *)inner;
-
-@end
-
-@interface ATMonster (ActionInner)<IATActionBaseInner>
+/// should be obfuscated
+- (NSString *)base;
 
 @end
 
-@implementation ATMonster (ActionInner)
+@interface ATMonster (ActionPrivate)<IATActionBase>
 
-- (NSString *)inner;
+@end
+
+@implementation ATMonster (ActionPrivate)
+
+/// should be obfuscated
+- (NSString *)base;
 {
     return nil;
 }
@@ -29,33 +31,38 @@
 
 @implementation ATMonster (Action)
 
+/// should be obfuscated
 - (void)doAction
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
+/// should be obfuscated
 + (void)doClassAction
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
+/// property should NOT be obfuscated
 - (BOOL)alive
 {
     return YES;
 }
 
+/// property should NOT be obfuscated
 - (void)setAlive:(BOOL)alive
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
 @end
 
-@implementation ATMonster (Action2)
+@implementation ATMonster (ActionEx)
 
-- (NSString *)actionBaseName;
+/// should be obfuscated
+- (void)doActionEx
 {
-    return [self inner];
+    NSLog(@"do nothing");
 }
 
 @end

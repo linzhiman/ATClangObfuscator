@@ -10,21 +10,26 @@
 
 @implementation ATFish
 
+/// should be obfuscated
 - (BOOL)sleepAtNight
 {
     return YES;
 }
 
+/// should be obfuscated
 - (void)swim
 {
-    [self swimABC];
+    /// should be obfuscated
+    [self swimEx];
 }
 
-- (void)swimABC
+/// should be obfuscated
+- (void)swimEx
 {
-    ;;
+    NSLog(@"do nothing");
 }
 
+/// should be obfuscated
 + (ATFish *)createInstance
 {
     return [[ATFish alloc] init];

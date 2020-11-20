@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol IATFish <NSObject>
 
+/// should be obfuscated
 - (void)swim;
 
 @end
