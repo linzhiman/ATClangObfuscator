@@ -10,6 +10,7 @@
 #import "ATAnimal.h"
 #import "IATFish.h"
 #import "IATBird.h"
+#import "IATMonster.h"
 #import "ATMacro.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,6 +36,10 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
 
 /// should NOT be obfuscated : ATTest call this with performSelector
 - (void)run;
+
+@end
+
+@interface ATMonsterEx : ATAnimal<IATMonster>
 
 @end
 

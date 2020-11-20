@@ -25,12 +25,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol IATActionEx <NSObject>
 
+/// should NOT be obfuscated : ATMonster (ActionEx) conforms to IATActionEx and it has property named dead
+- (BOOL)dead;
+
 /// should be obfuscated
 - (void)doActionEx;
 
 @end
 
 @interface ATMonster (ActionEx)<IATActionEx>
+
+/// property should NOT be obfuscated
+@property (nonatomic, assign) BOOL dead;
 
 @end
 

@@ -7,7 +7,6 @@
 //
 
 #import "ATMonster.h"
-#import "IATMonster.h"
 
 AT_DECLARE_NOTIFI(ATMonsterCreate);
 
@@ -120,6 +119,29 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 {
     /// should be obfuscated
     [self privateScareEx];
+}
+
+@end
+
+
+@implementation ATMonsterEx
+
+/// should be obfuscated
+- (void)scare
+{
+    NSLog(@"do nothing");
+}
+
+/// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
+- (void)amIBig
+{
+    NSLog(@"do nothing");
+}
+
+/// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amISmall
+- (void)amISmall
+{
+    NSLog(@"do nothing");
 }
 
 @end

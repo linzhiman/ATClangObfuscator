@@ -59,6 +59,18 @@
 
 @implementation ATMonster (ActionEx)
 
+/// property should NOT be obfuscated
+- (BOOL)dead
+{
+    return YES;
+}
+
+/// property should NOT be obfuscated
+- (void)setDead:(BOOL)dead
+{
+    NSLog(@"do nothing");
+}
+
 /// should be obfuscated
 - (void)doActionEx
 {
