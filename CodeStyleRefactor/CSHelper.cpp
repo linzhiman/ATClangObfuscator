@@ -71,20 +71,11 @@ SourceLocation CSHelper::getLoc(DeclContext *declContext)
         auto *tmp = cast<ObjCMethodDecl>(declContext);
         loc = tmp->getSelectorStartLoc();
     }
-    else if (declContext->getDeclKind() == Decl::ObjCInterface) {
-        auto *tmp = cast<ObjCInterfaceDecl>(declContext);
-        loc = tmp->getSourceRange().getBegin();
-    }
-    else if (declContext->getDeclKind() == Decl::ObjCImplementation) {
-        auto *tmp = cast<ObjCImplementationDecl>(declContext);
-        loc = tmp->getSourceRange().getBegin();
-    }
-    else if (declContext->getDeclKind() == Decl::ObjCProtocol) {
-        auto *tmp = cast<ObjCProtocolDecl>(declContext);
+    else if (auto *tmp = cast<ObjCContainerDecl>(declContext)) {
         loc = tmp->getSourceRange().getBegin();
     }
     else {
-        ;;
+        llvm::outs() << "[!NotHandle]" << "\t" << declContext->getDeclKindName() << "\n";
     }
     if (mSourceManager->isMacroBodyExpansion(loc) || mSourceManager->isMacroArgExpansion(loc)) {
         loc = mSourceManager->getSpellingLoc(loc);
@@ -148,8 +139,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
     if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
         ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
         if (decl->isOverriding()) {
-            const ObjCProtocolList &protocolList = interfaceDecl->getReferencedProtocols();
-            for (ObjCProtocolDecl *protocol : protocolList) {
+            for (ObjCProtocolDecl *protocol : interfaceDecl->all_referenced_protocols()) {
                 if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
                     if (mCache->ignoreProtocolSelector(protocol->getNameAsString(), selector.getAsString())) {
                         return false;

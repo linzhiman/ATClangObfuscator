@@ -1,30 +1,9 @@
-#include <string>
-#include <fstream>
-#include <queue>
-
-#include "clang/AST/AST.h"
-#include "clang/AST/ASTTypeTraits.h"
 #include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/AST/ParentMapContext.h"
-
-#include "clang/Basic/DiagnosticOptions.h"
-#include "clang/Basic/FileManager.h"
-#include "clang/Basic/SourceManager.h"
-
 #include "clang/Frontend/CompilerInstance.h"
-#include "clang/Frontend/FrontendActions.h"
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Rewrite/Core/Rewriter.h"
-
 #include "clang/Tooling/CommonOptionsParser.h"
-#include "clang/Tooling/Refactoring.h"
-#include "clang/Tooling/Tooling.h"
-
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Signals.h"
-#include "llvm/Support/Path.h"
-#include "llvm/Support/raw_ostream.h"
 
 #include "CSUtils.hpp"
 #include "CSCache.hpp"
@@ -33,7 +12,6 @@
 using namespace llvm;
 using namespace clang;
 using namespace clang::tooling;
-using namespace std;
 
 bool runSelectorComsumer;
 
@@ -71,6 +49,7 @@ public:
         }
         
         if (gCache.containClsName(decl->getNameAsString())) {
+            llvm::outs() << "----TraverseObjCProtocolDecl " << decl->getNameAsString() << "\n";
             return true;
         }
         
@@ -99,6 +78,7 @@ public:
         }
         
         if (gCache.containClsName(decl->getNameAsString())) {
+            llvm::outs() << "----TraverseObjCInterfaceDecl " << decl->getNameAsString() << "\n";
             return true;
         }
         
@@ -149,6 +129,7 @@ public:
         std::string realName = CSHelper::classCategoryName(decl);
         
         if (gCache.containClsName(realName)) {
+            llvm::outs() << "----TraverseObjCCategoryDecl " << realName << "\n";
             return true;
         }
 
@@ -434,27 +415,7 @@ public:
         if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
             ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
             if (interfaceDecl) {
-                if (decl->isOverriding()) {
-                    const ObjCProtocolList &protocolList = interfaceDecl->getReferencedProtocols();
-                    for (ObjCProtocolDecl *protocol : protocolList) {
-                        if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
-                            StringRef filePath = gHelper.getFilename(protocol);
-                            if (CSUtils::isUserSourceCode(filePath.str(), false)) {
-                                if (decl->getCanonicalDecl()->isPropertyAccessor()) {
-                                    gCache.addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
-            ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
-            if (decl->isOverriding()) {
-                const ObjCProtocolList &protocolList = category->getReferencedProtocols();
-                for (ObjCProtocolDecl *protocol : protocolList) {
+                for (ObjCProtocolDecl *protocol : interfaceDecl->all_referenced_protocols()) {
                     if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
                         StringRef filePath = gHelper.getFilename(protocol);
                         if (CSUtils::isUserSourceCode(filePath.str(), false)) {
@@ -464,6 +425,21 @@ public:
                         }
                         break;
                     }
+                }
+            }
+        }
+        else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+            ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
+            const ObjCProtocolList &protocolList = category->getReferencedProtocols();
+            for (ObjCProtocolDecl *protocol : protocolList) {
+                if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                    StringRef filePath = gHelper.getFilename(protocol);
+                    if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+                        if (decl->getCanonicalDecl()->isPropertyAccessor()) {
+                            gCache.addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
+                        }
+                    }
+                    break;
                 }
             }
         }
