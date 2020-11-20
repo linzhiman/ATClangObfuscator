@@ -29,4 +29,16 @@
     NSLog(@"do nothing");
 }
 
+/// should be obfuscated
+- (int)count
+{
+    return 0;
+}
+
+/// should be obfuscated
+- (void)setCount:(int)count
+{
+    NSLog(@"do nothing");
+}
+
 @end

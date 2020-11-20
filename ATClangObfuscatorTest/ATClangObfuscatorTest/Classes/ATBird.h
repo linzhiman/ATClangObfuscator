@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// should be obfuscated
 - (void)flyEx;
 
+/// should be obfuscated
+- (int)count;
+
+/// should be obfuscated
+- (void)setCount:(int)count;
+
 @end
 
 NS_ASSUME_NONNULL_END

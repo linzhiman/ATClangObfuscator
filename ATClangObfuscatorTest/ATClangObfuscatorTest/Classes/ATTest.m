@@ -46,11 +46,23 @@ AT_IMPLEMENT_SINGLETON(ATTest);
     /// new should NOT be obfuscated
     ATBird *bird = [ATBird new];
     
-    /// getter/setter should NOT be obfuscated
+    /// property should NOT be obfuscated
+    int age = [bird age];
+    
+    /// property should NOT be obfuscated
+    [bird setAge:age];
+    
+    /// property should NOT be obfuscated
     BOOL full = bird.full;
     
-    /// getter/setter should NOT be obfuscated
+    /// property should NOT be obfuscated
     bird.full = full;
+    
+    /// not property should be obfuscated
+    int count = bird.count;
+    
+    /// not property should be obfuscated
+    bird.count = count;
 }
 
 /// should be obfuscated
