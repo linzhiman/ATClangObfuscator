@@ -1,0 +1,519 @@
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
+index f897ff6..f3ee819 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
+@@ -34,16 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
+ - (void)setArea:(NSString *)area;
+ 
+ /// should be obfuscated
+-- (void)sleep;
++- (void)sealion_sleep;
+ 
+ /// should be obfuscated
+-- (void)sleepNow:(BOOL)now duration:(NSInteger)duration;
++- (void)sealion_sleepNow:(BOOL)now duration:(NSInteger)duration;
+ 
+ /// should be obfuscated
+-- (BOOL)sleepAtNight;
++- (BOOL)sealion_sleepAtNight;
+ 
+ /// should be obfuscated
+-+ (BOOL)isAnyInstanceLive;
+++ (BOOL)sealion_isAnyInstanceLive;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.m
+index dd819d8..95549ca 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.m
+@@ -19,7 +19,7 @@ static int kATAnimalLiveCount = 0;
+ @property (nonatomic, assign) int privatePC;
+ 
+ /// should be obfuscated
+-- (void)privateMethod;
++- (void)sealion_privateMethod;
+ 
+ @end
+ 
+@@ -85,20 +85,20 @@ static int kATAnimalLiveCount = 0;
+ }
+ 
+ /// should be obfuscated
+-- (void)sleep
++- (void)sealion_sleep
+ {
+     /// should be obfuscated
+-    [self sleepNow:YES duration:100];
++    [self sealion_sleepNow:YES duration:100];
+ }
+ 
+ /// should be obfuscated
+-- (void)sleepNow:(BOOL)now duration:(NSInteger)duration
++- (void)sealion_sleepNow:(BOOL)now duration:(NSInteger)duration
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-- (BOOL)sleepAtNight
++- (BOOL)sealion_sleepAtNight
+ {
+     return YES;
+ }
+@@ -116,19 +116,19 @@ static int kATAnimalLiveCount = 0;
+ }
+ 
+ /// should be obfuscated
+-- (void)privateMethod
++- (void)sealion_privateMethod
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-- (void)privateMethodEx
++- (void)sealion_privateMethodEx
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-+ (BOOL)isAnyInstanceLive
+++ (BOOL)sealion_isAnyInstanceLive
+ {
+     return kATAnimalLiveCount > 0;
+ }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.h
+index 0ae45df..b5f4f03 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.h
+@@ -18,13 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
+ @property (nonatomic, assign) BOOL full;
+ 
+ /// should be obfuscated
+-- (void)flyEx;
++- (void)sealion_flyEx;
+ 
+ /// should be obfuscated
+-- (int)count;
++- (int)sealion_count;
+ 
+ /// should be obfuscated
+-- (void)setCount:(int)count;
++- (void)setSealion_count:(int)count;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.m
+index d7580bc..0415e6d 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATBird.m
+@@ -11,32 +11,32 @@
+ @implementation ATBird
+ 
+ /// should be obfuscated
+-- (BOOL)sleepAtNight
++- (BOOL)sealion_sleepAtNight
+ {
+     return YES;
+ }
+ 
+ /// should be obfuscated
+-- (void)fly
++- (void)sealion_fly
+ {
+     /// should be obfuscated
+-    [self flyEx];
++    [self sealion_flyEx];
+ }
+ 
+ /// should be obfuscated
+-- (void)flyEx
++- (void)sealion_flyEx
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-- (int)count
++- (int)sealion_count
+ {
+     return 0;
+ }
+ 
+ /// should be obfuscated
+-- (void)setCount:(int)count
++- (void)setSealion_count:(int)count
+ {
+     NSLog(@"do nothing");
+ }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.h
+index 3dfe5f6..8147822 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.h
+@@ -15,10 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
+ @interface ATFish : ATAnimal<IATFish>
+ 
+ /// should be obfuscated
+-- (void)swimEx;
++- (void)sealion_swimEx;
+ 
+ /// should be obfuscated
+-+ (ATFish *)createInstance;
+++ (ATFish *)sealion_createInstance;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
+index 3805657..d097ab2 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
+@@ -11,26 +11,26 @@
+ @implementation ATFish
+ 
+ /// should be obfuscated
+-- (BOOL)sleepAtNight
++- (BOOL)sealion_sleepAtNight
+ {
+     return YES;
+ }
+ 
+ /// should be obfuscated
+-- (void)swim
++- (void)sealion_swim
+ {
+     /// should be obfuscated
+-    [self swimEx];
++    [self sealion_swimEx];
+ }
+ 
+ /// should be obfuscated
+-- (void)swimEx
++- (void)sealion_swimEx
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-+ (ATFish *)createInstance
+++ (ATFish *)sealion_createInstance
+ {
+     return [[ATFish alloc] init];
+ }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMacro.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMacro.h
+index 5a8ea5a..b504289 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMacro.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMacro.h
+@@ -14,10 +14,10 @@
+ /// sharedObject should be obfuscated
+ 
+ #define AT_DECLARE_SINGLETON \
+-+ (instancetype)sharedObject;
+++ (instancetype)sealion_sharedObject;
+ 
+ #define AT_IMPLEMENT_SINGLETON(atType) \
+-+ (instancetype)sharedObject { \
+++ (instancetype)sealion_sharedObject { \
+     static dispatch_once_t __once; \
+     static atType *__instance = nil; \
+     dispatch_once(&__once, ^{ \
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
+index 8eff7cc..c7f9896 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
+@@ -16,10 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
+ @property (nonatomic, assign) BOOL alive;
+ 
+ /// should be obfuscated
+-- (void)doAction;
++- (void)sealion_doAction;
+ 
+ /// should be obfuscated
+-+ (void)doClassAction;
+++ (void)sealion_doClassAction;
+ 
+ @end
+ 
+@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
+ - (BOOL)dead;
+ 
+ /// should be obfuscated
+-- (void)doActionEx;
++- (void)sealion_doActionEx;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
+index e938a48..ad06ce2 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
+@@ -11,7 +11,7 @@
+ @protocol IATActionBase <NSObject>
+ 
+ /// should be obfuscated
+-- (NSString *)base;
++- (NSString *)sealion_base;
+ 
+ @end
+ 
+@@ -22,7 +22,7 @@
+ @implementation ATMonster (ActionPrivate)
+ 
+ /// should be obfuscated
+-- (NSString *)base;
++- (NSString *)sealion_base;
+ {
+     return nil;
+ }
+@@ -32,13 +32,13 @@
+ @implementation ATMonster (Action)
+ 
+ /// should be obfuscated
+-- (void)doAction
++- (void)sealion_doAction
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-+ (void)doClassAction
+++ (void)sealion_doClassAction
+ {
+     NSLog(@"do nothing");
+ }
+@@ -72,7 +72,7 @@
+ }
+ 
+ /// should be obfuscated
+-- (void)doActionEx
++- (void)sealion_doActionEx
+ {
+     NSLog(@"do nothing");
+ }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
+index 05a8d2a..76a96d6 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
+@@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
+ AT_EXTERN_NOTIFI(ATMonsterCreate);
+ 
+ /// should be obfuscated
+-#define ATMonsterCenterObj [ATMonsterCenter sharedObject]
++#define ATMonsterCenterObj [ATMonsterCenter sealion_sharedObject]
+ 
+ /// should be obfuscated
+-#define ATMonsterCenterObjCreate [ATMonsterCenterObj create];
++#define ATMonsterCenterObjCreate [ATMonsterCenterObj sealion_create];
+ 
+ @class ATMonster;
+ 
+@@ -48,7 +48,7 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
+ AT_DECLARE_SINGLETON;
+ 
+ /// should be obfuscated
+-- (ATMonster *)create;
++- (ATMonster *)sealion_create;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
+index b99d45b..1c665c4 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
+@@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ @implementation ATMonster
+ 
+ /// should be obfuscated
+-- (void)swim
++- (void)sealion_swim
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-- (void)fly
++- (void)sealion_fly
+ {
+     NSLog(@"do nothing");
+ }
+ 
+ /// should be obfuscated
+-- (void)scare
++- (void)sealion_scare
+ {
+     /// should be obfuscated
+-    [self privateScare];
++    [self sealion_privateScare];
+ }
+ 
+ /// should be obfuscated
+-- (void)privateScare
++- (void)sealion_privateScare
+ {
+     /// should be obfuscated
+-    [self privateScareEx];
++    [self sealion_privateScareEx];
+ }
+ 
+ /// should be obfuscated
+-- (void)privateScareEx
++- (void)sealion_privateScareEx
+ {
+     NSLog(@"do nothing");
+ }
+@@ -118,7 +118,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ - (void)run
+ {
+     /// should be obfuscated
+-    [self privateScareEx];
++    [self sealion_privateScareEx];
+ }
+ 
+ @end
+@@ -127,7 +127,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ @implementation ATMonsterEx
+ 
+ /// should be obfuscated
+-- (void)scare
++- (void)sealion_scare
+ {
+     NSLog(@"do nothing");
+ }
+@@ -152,7 +152,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
+ 
+ /// should be obfuscated
+-- (ATMonster *)create
++- (ATMonster *)sealion_create
+ {
+     AT_POST_NOTIFY(ATMonsterCreate);
+     return [ATMonster new];
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
+index 0184c58..c310450 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
+@@ -19,10 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
+ AT_DECLARE_SINGLETON;
+ 
+ /// should be obfuscated
+-- (void)test;
++- (void)sealion_test;
+ 
+ /// should be obfuscated
+-- (void)setMonster:(ATMonster *)monster;
++- (void)setSealion_monster:(ATMonster *)monster;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
+index 8cf2ffc..2be1519 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
+@@ -26,22 +26,22 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+     return self;
+ }
+ 
+-- (void)test
++- (void)sealion_test
+ {
+     /// should be obfuscated
+-    ATFish *fish = [ATFish createInstance];
++    ATFish *fish = [ATFish sealion_createInstance];
+     
+     /// should be obfuscated
+-    [fish swim];
++    [fish sealion_swim];
+     
+     /// should be obfuscated
+-    [fish swimEx];
++    [fish sealion_swimEx];
+     
+     /// new should NOT be obfuscated
+     id<IATBird> iBird = [ATBird new];
+     
+     /// should be obfuscated
+-    [iBird fly];
++    [iBird sealion_fly];
+     
+     /// new should NOT be obfuscated
+     ATBird *bird = [ATBird new];
+@@ -59,32 +59,32 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+     bird.full = full;
+     
+     /// not property should be obfuscated
+-    int count = bird.count;
++    int count = bird.sealion_count;
+     
+     /// not property should be obfuscated
+-    bird.count = count;
++    bird.sealion_count = count;
+ }
+ 
+ /// should be obfuscated
+-- (void)setMonster:(ATMonster *)monster
++- (void)setSealion_monster:(ATMonster *)monster
+ {
+     /// should be obfuscated
+-    [monster sleep];
++    [monster sealion_sleep];
+     
+     /// should be obfuscated
+-    [monster doAction];
++    [monster sealion_doAction];
+     
+     /// run should NOT be obfuscated
+     [monster performSelector:@selector(run)];
+     
+     /// should be obfuscated
+-    [ATMonster doClassAction];
++    [ATMonster sealion_doClassAction];
+ }
+ 
+ AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
+ {
+     /// should be obfuscated
+-    [ATMonsterCenterObj create];
++    [ATMonsterCenterObj sealion_create];
+     
+     ATMonsterCenterObjCreate;
+ }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h
+index edb48db..096b0f0 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h
+@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @protocol IATBird <NSObject>
+ 
+ /// should be obfuscated
+-- (void)fly;
++- (void)sealion_fly;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATFish.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATFish.h
+index 3224c42..97b3a01 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATFish.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATFish.h
+@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @protocol IATFish <NSObject>
+ 
+ /// should be obfuscated
+-- (void)swim;
++- (void)sealion_swim;
+ 
+ @end
+ 
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
+index 30d8500..fd90bbc 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
+@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @protocol IATMonster <NSObject>
+ 
+ /// should be obfuscated
+-- (void)scare;
++- (void)sealion_scare;
+ 
+ /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
+ - (void)amIBig;
