@@ -318,7 +318,7 @@ index 05a8d2a..76a96d6 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
-index b99d45b..1c665c4 100644
+index 040f5d1..0d325e4 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 @@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
@@ -380,7 +380,16 @@ index b99d45b..1c665c4 100644
  {
      NSLog(@"do nothing");
  }
-@@ -152,7 +152,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -150,7 +150,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ @implementation ATMonsterEx (OnlyImp)
+ 
+ /// should be obfuscated
+-- (void)onlyImp
++- (void)sealion_onlyImp
+ {
+     NSLog(@"do nothing");
+ }
+@@ -163,20 +163,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
  
  /// should be obfuscated
@@ -389,6 +398,21 @@ index b99d45b..1c665c4 100644
  {
      AT_POST_NOTIFY(ATMonsterCreate);
      return [ATMonster new];
+ }
+ 
+ /// should be obfuscated
+-- (ATMonsterEx *)createEx
++- (ATMonsterEx *)sealion_createEx
+ {
+     /// new should NOT be obfuscated
+     ATMonsterEx *ex = [ATMonsterEx new];
+     
+     /// should be obfuscated
+-    [ex onlyImp];
++    [ex sealion_onlyImp];
+     
+     return ex;
+ }
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
 index 0184c58..c310450 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
@@ -407,7 +431,7 @@ index 0184c58..c310450 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-index 8cf2ffc..2be1519 100644
+index 002ad27..fd9906f 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 @@ -26,22 +26,22 @@ AT_IMPLEMENT_SINGLETON(ATTest);
@@ -438,7 +462,7 @@ index 8cf2ffc..2be1519 100644
      
      /// new should NOT be obfuscated
      ATBird *bird = [ATBird new];
-@@ -59,32 +59,32 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+@@ -59,31 +59,31 @@ AT_IMPLEMENT_SINGLETON(ATTest);
      bird.full = full;
      
      /// not property should be obfuscated
@@ -468,8 +492,16 @@ index 8cf2ffc..2be1519 100644
      /// should be obfuscated
 -    [ATMonster doClassAction];
 +    [ATMonster sealion_doClassAction];
- }
- 
+     
+     id tmp = monster;
+     
+     /// should be obfuscated
+-    [tmp sleep];
++    [tmp sealion_sleep];
+     
+     /// run should NOT be obfuscated
+     [tmp run];
+@@ -92,7 +92,7 @@ AT_IMPLEMENT_SINGLETON(ATTest);
  AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
  {
      /// should be obfuscated
