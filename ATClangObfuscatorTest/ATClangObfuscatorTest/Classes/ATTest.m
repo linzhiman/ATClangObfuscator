@@ -79,6 +79,14 @@ AT_IMPLEMENT_SINGLETON(ATTest);
     
     /// should be obfuscated
     [ATMonster doClassAction];
+    
+    id tmp = monster;
+    
+    /// should be obfuscated
+    [tmp sleep];
+    
+    /// run should NOT be obfuscated
+    [tmp run];
 }
 
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)

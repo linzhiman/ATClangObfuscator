@@ -147,6 +147,17 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 @end
 
 
+@implementation ATMonsterEx (OnlyImp)
+
+/// should be obfuscated
+- (void)onlyImp
+{
+    NSLog(@"do nothing");
+}
+
+@end
+
+
 @implementation ATMonsterCenter
 
 AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
@@ -156,6 +167,18 @@ AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
 {
     AT_POST_NOTIFY(ATMonsterCreate);
     return [ATMonster new];
+}
+
+/// should be obfuscated
+- (ATMonsterEx *)createEx
+{
+    /// new should NOT be obfuscated
+    ATMonsterEx *ex = [ATMonsterEx new];
+    
+    /// should be obfuscated
+    [ex onlyImp];
+    
+    return ex;
 }
 
 @end
