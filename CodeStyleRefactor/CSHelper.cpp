@@ -102,7 +102,7 @@ std::string CSHelper::getFilename(ObjCMessageExpr *expr)
     return mSourceManager->getFilename(loc).str();
 }
 
-bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList)
+bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
 {
     ObjCMethodFamily family = decl->getMethodFamily();
     if (family != OMF_None && family != OMF_performSelector) {
@@ -136,6 +136,12 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
         }
     }
     
+    bool checkWhiteBlackList = true;
+    SourceLocation loc = decl->getSelectorStartLoc();
+    if (mSourceManager->isMacroBodyExpansion(loc) || mSourceManager->isMacroArgExpansion(loc)) {
+        checkWhiteBlackList = false;
+    }
+    
     if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
         ObjCInterfaceDecl *interfaceDecl =  decl->getClassInterface();
         if (decl->isOverriding()) {
@@ -146,10 +152,24 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
                     }
                     StringRef filePath = getFilename(protocol);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
+                        return checkWhiteBlackList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
                     }
                     break;
                 }
+            }
+            ObjCMethodDecl *SuperMethod = nullptr;
+            while ((interfaceDecl = interfaceDecl->getSuperClass()) && !SuperMethod) {
+                SuperMethod = interfaceDecl->getMethod(decl->getSelector(), decl->isInstanceMethod());
+                if (!SuperMethod) {
+                    for (const auto *Cat : interfaceDecl->known_categories()) {
+                        if ((SuperMethod = Cat->getMethod(decl->getSelector(), decl->isInstanceMethod())))
+                            break;
+                    }
+                }
+            }
+            if (SuperMethod) {
+                StringRef filePath = getFilename(SuperMethod);
+                return CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder);
             }
         }
         else {
@@ -167,7 +187,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
                     }
                 }
             }
-            return checkList ? mCache->checkWhiteBlackList(interfaceDecl->getNameAsString()) : true;
+            return checkWhiteBlackList ? mCache->checkWhiteBlackList(interfaceDecl->getNameAsString()) : true;
         }
     }
     else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
@@ -181,7 +201,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
                     }
                     StringRef filePath = getFilename(protocol);
                     if (CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
-                        return checkList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
+                        return checkWhiteBlackList ? mCache->checkWhiteBlackList(protocol->getNameAsString()) : true;
                     }
                     break;
                 }
@@ -189,7 +209,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
         }
         else {
             std::string realName = CSHelper::classCategoryName(category);
-            return checkList ? mCache->checkWhiteBlackList(realName) : true;
+            return checkWhiteBlackList ? mCache->checkWhiteBlackList(realName) : true;
         }
     }
     else if (parentKind == Decl::ObjCProtocol) {
@@ -197,13 +217,154 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, boo
         if (mCache->ignoreProtocolSelector(protocolDecl->getNameAsString(), selector.getAsString())) {
             return false;
         }
-        return checkList ? mCache->checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
+        return checkWhiteBlackList ? mCache->checkWhiteBlackList(protocolDecl->getNameAsString()) : true;
     }
     else {
         llvm::outs() << "\t\t"  << "isNeedObfuscate" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
     }
     
     return false;
+}
+
+bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl)
+{
+    return isNeedObfuscate(decl, true);
+}
+
+void CSHelper::obfuscate(ObjCMethodDecl *decl)
+{
+    std::string clsName = "";
+    
+    DeclContext *parent = decl->getParent();
+    Decl::Kind parentKind = parent->getDeclKind();
+    
+    if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
+        ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
+        if (interfaceDecl) {
+            clsName = interfaceDecl->getNameAsString();
+        }
+    }
+    else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+        ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent)
+                                                                       : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
+        clsName = CSHelper::classCategoryName(category);
+    }
+    else if (parentKind == Decl::ObjCProtocol) {
+        ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
+        if (protocolDecl) {
+            clsName = protocolDecl->getNameAsString();
+        }
+    }
+    
+    if (clsName.length() == 0) {
+        return;
+    }
+    
+    std::string selector = decl->getSelector().getAsString();
+    std::string newSelector = newSelectorName(selector);
+    
+    if (mCache->addClsNameSelector(clsName, selector, newSelector)) {
+        addReplacement(decl);
+    }
+}
+
+bool CSHelper::isNeedObfuscate(ObjCMessageExpr *expr)
+{
+    ObjCMethodDecl *decl = expr->getMethodDecl();
+    if (!decl) {
+        return false;
+    }
+    
+    StringRef filePath = getFilename(decl);
+    if (!CSUtils::isUserSourceCode(filePath.str(), true)) {
+        return false;
+    }
+    
+    return isNeedObfuscate(decl, false);
+}
+
+void CSHelper::obfuscate(ObjCMessageExpr *expr, ASTContext *context)
+{
+    ObjCMethodDecl *decl = expr->getMethodDecl();
+    if (!decl) {
+        return;
+    }
+    
+    std::string clsName = "";
+    
+    DeclContext *parent = decl->getParent();
+    Decl::Kind parentKind = parent->getDeclKind();
+    
+    if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
+        ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
+        if (interfaceDecl) {
+            clsName = interfaceDecl->getNameAsString();
+        }
+    }
+    else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+        ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent)
+                                                                       : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
+        clsName = CSHelper::classCategoryName(category);
+    }
+    else if (parentKind == Decl::ObjCProtocol) {
+        ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
+        if (protocolDecl) {
+            clsName = protocolDecl->getNameAsString();
+        }
+    }
+    else if (expr->getReceiverType()->isObjCIdType()) {
+        clsName = "_ObjCId_";
+    }
+    else {
+        llvm::outs() << "\t" << "[!NotHandle] " << expr->getSelector().getAsString() << "\n";
+    }
+    
+    if (clsName.length() == 0) {
+        return;
+    }
+    
+    if (mCache->containClsName(clsName)) {
+        addReplacement(expr, context);
+    }
+}
+
+void CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl)
+{
+    Selector selector = decl->getSelector();
+    DeclContext *parent = decl->getParent();
+    Decl::Kind parentKind = parent->getDeclKind();
+
+    if (parentKind == Decl::ObjCInterface || parentKind == Decl::ObjCImplementation) {
+        ObjCInterfaceDecl *interfaceDecl = decl->getClassInterface();
+        if (interfaceDecl) {
+            for (ObjCProtocolDecl *protocol : interfaceDecl->all_referenced_protocols()) {
+                if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                    StringRef filePath = getFilename(protocol);
+                    if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+                        if (decl->getCanonicalDecl()->isPropertyAccessor()) {
+                            mCache->addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
+        ObjCCategoryDecl *category = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
+        const ObjCProtocolList &protocolList = category->getReferencedProtocols();
+        for (ObjCProtocolDecl *protocol : protocolList) {
+            if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
+                StringRef filePath = getFilename(protocol);
+                if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+                    if (decl->getCanonicalDecl()->isPropertyAccessor()) {
+                        mCache->addIgnoreProtocolSelector(protocol->getNameAsString(), selector.getAsString());
+                    }
+                }
+                break;
+            }
+        }
+    }
 }
 
 void CSHelper::addReplacement(const std::string &filePath, const Replacement &replace)
@@ -261,12 +422,12 @@ void CSHelper::addReplacement(ObjCMethodDecl *decl)
     addReplacement(sel, false, loc);
 }
 
-void CSHelper::addReplacement(ObjCMessageExpr *expr, ASTContext &context)
+void CSHelper::addReplacement(ObjCMessageExpr *expr, ASTContext *context)
 {
     Selector sel = expr->getSelector();
     
     bool isImplicitProperty = false;
-    DynTypedNodeList nodeList = context.getParents(*expr);
+    DynTypedNodeList nodeList = context->getParents(*expr);
     for(auto it = nodeList.begin(); it != nodeList.end(); ++it) {
         if (it->getNodeKind().isSame(ASTNodeKind::getFromNodeKind<PseudoObjectExpr>())) {
             const PseudoObjectExpr *pseudo = it->get<PseudoObjectExpr>();

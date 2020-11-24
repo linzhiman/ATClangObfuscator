@@ -40,10 +40,16 @@ public:
     std::string getFilename(ObjCContainerDecl *decl);
     std::string getFilename(ObjCMessageExpr *expr);
 
-    bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder, bool checkList);
+    bool isNeedObfuscate(ObjCMethodDecl *decl);
+    void obfuscate(ObjCMethodDecl *decl);
+    
+    bool isNeedObfuscate(ObjCMessageExpr *expr);
+    void obfuscate(ObjCMessageExpr *expr, ASTContext *context);
+    
+    void addIgnoreProtocolSelector(ObjCMethodDecl *decl);
 
     void addReplacement(ObjCMethodDecl *decl);
-    void addReplacement(ObjCMessageExpr *expr, ASTContext &context);
+    void addReplacement(ObjCMessageExpr *expr, ASTContext *context);
     
 private:
     std::string mGetterPrefix;
@@ -52,6 +58,8 @@ private:
     CSCache *mCache;
     SourceManager *mSourceManager;
     std::map<std::string, Replacements> *mRpsMap;
+    
+    bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder);
     
     void addReplacement(const std::string &filePath, const Replacement &replace);
     void addReplacement(Selector sel, bool isImplicitProperty, SourceLocation loc);
