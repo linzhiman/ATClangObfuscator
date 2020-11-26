@@ -39,7 +39,7 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
 
 @end
 
-@interface ATMonsterEx : ATAnimal<IATMonster>
+@interface ATMonsterEx : ATAnimal<IATMonsterEx>
 
 @end
 

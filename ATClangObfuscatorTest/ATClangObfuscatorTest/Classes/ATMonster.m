@@ -144,6 +144,12 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
     NSLog(@"do nothing");
 }
 
+/// should be obfuscated
+- (void)scareEx
+{
+    NSLog(@"do nothing");
+}
+
 @end
 
 
