@@ -176,6 +176,10 @@ public:
     {
         std::string clsName = CSHelper::classCategoryName(decl);
         
+        if (!gCache.containClsName(clsName)) {
+            gCache.addClsName(clsName);
+        }
+        
         llvm::outs() << "\t" << "VisitObjCCategoryImplDecl " << clsName << "\n";
         
         return true;

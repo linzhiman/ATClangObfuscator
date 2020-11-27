@@ -32,10 +32,7 @@ public:
     void setSourceManager(SourceManager *sm);
     void setReplacementsMap(std::map<std::string, Replacements> *rpsMap);
     void setCache(CSCache *cache);
-    
-    std::string newSelectorName(const std::string& selector);
 
-    SourceLocation getLoc(DeclContext *declContext);
     std::string getFilename(ObjCMethodDecl *decl);
     std::string getFilename(ObjCContainerDecl *decl);
     std::string getFilename(ObjCMessageExpr *expr);
@@ -47,9 +44,6 @@ public:
     void obfuscate(ObjCMessageExpr *expr, ASTContext *context);
     
     void addIgnoreProtocolSelector(ObjCMethodDecl *decl);
-
-    void addReplacement(ObjCMethodDecl *decl);
-    void addReplacement(ObjCMessageExpr *expr, ASTContext *context);
     
 private:
     std::string mGetterPrefix;
@@ -59,10 +53,27 @@ private:
     SourceManager *mSourceManager;
     std::map<std::string, Replacements> *mRpsMap;
     
+    std::string newSelectorName(const std::string& selector);
+    
+    SourceLocation getLoc(DeclContext *declContext);
+    SourceLocation getLoc(ObjCMessageExpr *expr);
+    
+    std::string getClassName(ObjCMethodDecl *decl);
+    
+    bool isGetterOrSetter(ObjCMethodDecl *decl, ObjCContainerDecl *containerDecl);
+    bool isPropertyAccessor(ObjCMethodDecl *decl);
+    bool isMacroExpansion(ObjCMethodDecl *decl);
+    std::vector<ObjCProtocolDecl *> getAllProtocols(ObjCProtocolDecl *protocol);
+    std::vector<ObjCProtocolDecl *> getDefineProtocols(ObjCMethodDecl *decl);
+    std::vector<ObjCMethodDecl *> getDefineMethods(ObjCMethodDecl *decl);
     bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder);
+    
+    bool addIgnoreProtocolSelector(ObjCMethodDecl *decl, ObjCProtocolDecl *protocol);
     
     void addReplacement(const std::string &filePath, const Replacement &replace);
     void addReplacement(Selector sel, bool isImplicitProperty, SourceLocation loc);
+    void addReplacement(ObjCMethodDecl *decl);
+    void addReplacement(ObjCMessageExpr *expr, ASTContext *context);
 };
 
 #endif /* CSHelper_hpp */
