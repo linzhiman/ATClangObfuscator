@@ -292,7 +292,7 @@ index e938a48..ad06ce2 100644
      NSLog(@"do nothing");
  }
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
-index 05a8d2a..76a96d6 100644
+index f1b5f17..07c3e21 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
 @@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
@@ -318,7 +318,7 @@ index 05a8d2a..76a96d6 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
-index 040f5d1..0d325e4 100644
+index 4c5c5a3..f71810b 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 @@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
@@ -380,7 +380,16 @@ index 040f5d1..0d325e4 100644
  {
      NSLog(@"do nothing");
  }
-@@ -150,7 +150,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -145,7 +145,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+ }
+ 
+ /// should be obfuscated
+-- (void)scareEx
++- (void)sealion_scareEx
+ {
+     NSLog(@"do nothing");
+ }
+@@ -156,7 +156,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  @implementation ATMonsterEx (OnlyImp)
  
  /// should be obfuscated
@@ -389,7 +398,7 @@ index 040f5d1..0d325e4 100644
  {
      NSLog(@"do nothing");
  }
-@@ -163,20 +163,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -169,20 +169,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
  
  /// should be obfuscated
@@ -537,7 +546,7 @@ index 3224c42..97b3a01 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
-index 30d8500..fd90bbc 100644
+index 79c959f..a0e3795 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 @@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
@@ -549,3 +558,19 @@ index 30d8500..fd90bbc 100644
  
  /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
  - (void)amIBig;
+@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
+ @protocol IATMonsterEx <IATMonster>
+ 
+ /// should be obfuscated
+-- (void)scare;
++- (void)sealion_scare;
+ 
+ /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
+ - (void)amIBig;
+ 
+ /// should be obfuscated
+-- (void)scareEx;
++- (void)sealion_scareEx;
+ 
+ @end
+ 
