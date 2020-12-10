@@ -11,6 +11,54 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+std::string CSCache::getSelectorPrefix()
+{
+    if (selectorPrefix.length() > 0) {
+        return selectorPrefix;
+    }
+    return "at_";
+}
+
+void CSCache::loadConfig(const std::string &filePath)
+{
+    std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
+    
+    std::string tmp;
+    bool prefix = false;
+    bool whiteList = false;
+    bool blackList = false;
+    
+    while (!ifs.eof()) {
+        ifs >> tmp;
+        if (tmp == "prefix:") {
+            prefix = true;
+            whiteList = false;
+            blackList = false;
+        }
+        else if (tmp == "whiteList:") {
+            prefix = false;
+            whiteList = true;
+            blackList = false;
+        }
+        else if (tmp == "blackList:") {
+            prefix = false;
+            whiteList = false;
+            blackList = true;
+        }
+        else {
+            if (prefix) {
+                selectorPrefix = tmp;
+            }
+            else if (whiteList) {
+                whiteListSet.insert(tmp);
+            }
+            else if (blackList) {
+                blackListSet.insert(tmp);
+            }
+        }
+    }
+}
+
 bool CSCache::containClsName(const std::string& clsName)
 {
     return clsMethodMap.find(clsName) != clsMethodMap.end();
@@ -97,17 +145,30 @@ void CSCache::loadIgnoreSelectors(const std::string &filePath)
 {
     std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
     
-    std::string selectorCountTag;
-    int selectorCount;
-    
-    std::string selector;
+    std::string ignore;
+    int count;
+    int count2;
+    std::string protocolTemp;
+    std::string selectorTemp;
     
     while (!ifs.eof()) {
-        ifs >> selectorCountTag >> selectorCount;
-        while (selectorCount > 0) {
-            ifs >> selector;
-            selectorSet.insert(selector);
-            selectorCount--;
+        ifs >> ignore >> count;
+        while (count > 0) {
+            ifs >> selectorTemp;
+            selectorSet.insert(selectorTemp);
+            count--;
+        }
+        ifs >> ignore >> count;
+        while (count > 0) {
+            ifs >> protocolTemp;
+            protocolSelectorMap[protocolTemp] = std::set<std::string>();
+            ifs >> ignore >> count2;
+            while (count2 > 0) {
+                ifs >> selectorTemp;
+                protocolSelectorMap[protocolTemp].insert(selectorTemp);
+                count2--;
+            }
+            count--;
         }
     }
 }
@@ -116,9 +177,21 @@ void CSCache::saveIgnoreSelectors(const std::string &filePath)
 {
     std::ofstream ofs = std::ofstream(filePath, std::ofstream::out);
     
-    ofs <<"selectorCcount:" << "\t" << selectorSet.size() << "\n";
+    ofs <<"ignoreSelectorCcount:" << "\t" << selectorSet.size() << "\n";
     
     for (auto it = selectorSet.begin(); it != selectorSet.end(); ++it) {
-        ofs << *it <<"\n";
+        ofs << *it << "\n";
+    }
+    
+    ofs << "\n";
+    
+    ofs <<"ignoreProtocolSelectorProtocolCount:" << "\t" << protocolSelectorMap.size() << "\n";
+    
+    for (auto it = protocolSelectorMap.begin(); it != protocolSelectorMap.end(); ++it) {
+        ofs << it->first << "\n";
+        ofs <<"ignoreProtocolSelectorSelectorCount:" << "\t" << it->second.size() << "\n";
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            ofs << *it2 << "\n";
+        }
     }
 }

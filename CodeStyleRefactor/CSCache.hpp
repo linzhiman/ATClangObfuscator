@@ -17,6 +17,9 @@ using namespace std;
 class CSCache
 {
 public:
+    std::string getSelectorPrefix();
+    void loadConfig(const std::string &filePath);
+    
     bool containClsName(const std::string& clsName);
     void addClsName(const std::string& clsName);
     bool addClsNameSelector(const std::string& clsName, const std::string& selector, const std::string& newSelector);
@@ -49,6 +52,8 @@ private:
 
     //黑名单
     std::set<std::string> blackListSet;
+    
+    std::string selectorPrefix;
 };
 
 #endif /* CSCache_hpp */

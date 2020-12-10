@@ -425,12 +425,21 @@ int main(int argc, const char **argv)
     
     std::unique_ptr<FrontendActionFactory> factory(new CodeStyleActionFactory(tool));
     
-    gHelper.setSelectorPrefix("sealion_");
+    {{
+        llvm::SmallString<256> path(sourceDir);
+        llvm::sys::path::append(path, "obfuscatorConfig.txt");
+        std::string filePath = std::string(path.str());
+        if (sys::fs::exists(filePath)) {
+            gCache.loadConfig(filePath);
+        }
+    }}
+    
+    gHelper.setSelectorPrefix(gCache.getSelectorPrefix());
     gHelper.setReplacementsMap(&tool.getReplacements());
     gHelper.setCache(&gCache);
     
     llvm::SmallString<256> path(sourceDir);
-    llvm::sys::path::append(path, "selectors.txt");
+    llvm::sys::path::append(path, "ignoreSelectors.txt");
     std::string selectorFilePath = std::string(path.str());
     if (sys::fs::exists(selectorFilePath)) {
         gCache.loadIgnoreSelectors(selectorFilePath);
@@ -440,7 +449,7 @@ int main(int argc, const char **argv)
         if (int Result = tool.run(factory.get())) {
             return Result;
         }
-//        gCache.saveIgnoreSelectors(selectorFilePath);
+        gCache.saveIgnoreSelectors(selectorFilePath);
     }
     
     gCache.clearClsName();
