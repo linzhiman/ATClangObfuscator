@@ -164,6 +164,12 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 @end
 
 
+@interface ATMonsterCenter ()
+
+@property (nonatomic, weak) ATMonsterView *currentMonsterView;
+
+@end
+
 @implementation ATMonsterCenter
 
 AT_IMPLEMENT_SINGLETON(ATMonsterCenter);

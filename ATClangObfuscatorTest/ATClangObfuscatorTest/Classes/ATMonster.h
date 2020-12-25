@@ -50,6 +50,9 @@ AT_DECLARE_SINGLETON;
 /// should be obfuscated
 - (ATMonster *)create;
 
+/// getter/setter should NOT be obfuscated
+- (UIView *)currentMonsterView;
+
 @end
 
 NS_ASSUME_NONNULL_END
