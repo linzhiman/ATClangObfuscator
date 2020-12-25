@@ -276,8 +276,8 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
         if (mCache->ignoreProtocolSelector(protocol->getNameAsString(), decl->getSelector().getAsString())) {
             return false;
         }
-        StringRef filePath = getFilename(protocol);
-        if (!CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
+        std::string filePath = getFilename(protocol);
+        if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
             return false;
         }
         else if (checkWhiteBlackList && !mCache->checkWhiteBlackList(protocol->getNameAsString())) {
@@ -285,8 +285,8 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
         }
     }
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
-        StringRef filePath = getFilename(method);
-        if (!CSUtils::isUserSourceCode(filePath.str(), checkIgnoreFolder)) {
+        std::string filePath = getFilename(method);
+        if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
             return false;
         }
         else if (checkWhiteBlackList && !mCache->checkWhiteBlackList(getClassName(method))) {
@@ -352,8 +352,8 @@ bool CSHelper::isNeedObfuscate(ObjCMessageExpr *expr)
         return false;
     }
     
-    StringRef filePath = getFilename(decl);
-    if (!CSUtils::isUserSourceCode(filePath.str(), true)) {
+    std::string filePath = getFilename(decl);
+    if (!mCache->isUserSourceCode(filePath, true)) {
         return false;
     }
     
@@ -402,8 +402,8 @@ void CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl)
 bool CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl, ObjCProtocolDecl *protocol)
 {
     if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
-        StringRef filePath = getFilename(protocol);
-        if (CSUtils::isUserSourceCode(filePath.str(), false)) {
+        std::string filePath = getFilename(protocol);
+        if (mCache->isUserSourceCode(filePath, false)) {
             if (decl->getCanonicalDecl()->isPropertyAccessor()) {
                 mCache->addIgnoreProtocolSelector(protocol->getNameAsString(), decl->getSelector().getAsString());
             }

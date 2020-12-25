@@ -44,7 +44,7 @@ public:
     
     bool TraverseObjCProtocolDecl(ObjCProtocolDecl *decl)
     {
-        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -77,7 +77,7 @@ public:
     
     bool TraverseObjCInterfaceDecl(ObjCInterfaceDecl *decl)
     {
-        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -130,7 +130,7 @@ public:
     
     bool TraverseObjCCategoryDecl(ObjCCategoryDecl *decl)
     {
-        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
             return true;
         }
         
@@ -229,7 +229,7 @@ public:
     
     bool TraverseObjCImplementationDecl(ObjCImplementationDecl *decl)
     {
-        if (!CSUtils::isUserSourceCode(gHelper.getFilename(decl), false)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), false)) {
             return true;
         }
         
@@ -346,7 +346,7 @@ public:
     
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override
     {
-        if (!CSUtils::isUserSourceCode(InFile.str(), false)) {
+        if (!gCache.isUserSourceCode(InFile.str(), false)) {
             llvm::outs() << "\n[Ignore] file:" << InFile.str() << "\n";
             return unique_ptr<ASTConsumer>();
         }
@@ -403,44 +403,35 @@ int main(int argc, const char **argv)
     CommonOptionsParser op(argc, argv, category);
     
     std::vector<std::string> analizeFiles = op.getSourcePathList();
-    std::string sourceDir;
-    if (analizeFiles.size() == 1) {
-        std::string path = analizeFiles.front();
-        if (sys::fs::is_regular_file(path)) {
-            sourceDir = path.substr(0, path.rfind('\\'));
-        }
-        else {
-            sourceDir = path;
-            analizeFiles = CSUtils::filterNotUserSourceCode(op.getCompilations().getAllFiles());
-        }
-    }
-    else {
+    if (analizeFiles.size() != 1) {
         llvm::outs() << "\n[Error] only support one source path";
+        return 0;
+    }
+    
+    std::string sourceDir = analizeFiles.front();
+    if (sys::fs::is_regular_file(sourceDir)) {
+        llvm::outs() << "\n[Error] only support folder";
         return 0;
     }
     
     long long start =  CSUtils::getCurrentTimestamp();
     
+    std::string configFilePath = sourceDir + "obfuscatorConfig.txt";
+    if (sys::fs::exists(configFilePath)) {
+        gCache.loadConfig(configFilePath);
+    }
+    
+    analizeFiles = gCache.filterNotUserSourceCode(op.getCompilations().getAllFiles());
+    
     RefactoringTool tool(op.getCompilations(), analizeFiles);
     
     std::unique_ptr<FrontendActionFactory> factory(new CodeStyleActionFactory(tool));
-    
-    {{
-        llvm::SmallString<256> path(sourceDir);
-        llvm::sys::path::append(path, "obfuscatorConfig.txt");
-        std::string filePath = std::string(path.str());
-        if (sys::fs::exists(filePath)) {
-            gCache.loadConfig(filePath);
-        }
-    }}
     
     gHelper.setSelectorPrefix(gCache.getSelectorPrefix());
     gHelper.setReplacementsMap(&tool.getReplacements());
     gHelper.setCache(&gCache);
     
-    llvm::SmallString<256> path(sourceDir);
-    llvm::sys::path::append(path, "ignoreSelectors.txt");
-    std::string selectorFilePath = std::string(path.str());
+    std::string selectorFilePath = sourceDir + "ignoreSelectors.txt";
     if (sys::fs::exists(selectorFilePath)) {
         gCache.loadIgnoreSelectors(selectorFilePath);
     }

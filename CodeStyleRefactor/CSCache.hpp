@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 
 using namespace std;
 
@@ -37,6 +38,9 @@ public:
     void loadIgnoreSelectors(const std::string &filePath);
     void saveIgnoreSelectors(const std::string &filePath);
     
+    bool isUserSourceCode(const std::string filename, bool checkWeakIgnoreFolder);
+    std::vector<std::string> filterNotUserSourceCode(const std::vector<std::string> &allFiles);
+    
 private:
     //类名:方法列表
     std::map<std::string, std::map<std::string, std::string>> clsMethodMap;
@@ -52,6 +56,10 @@ private:
 
     //黑名单
     std::set<std::string> blackListSet;
+    
+    std::vector<std::string> strongIgnoreFolderVector;
+    
+    std::vector<std::string> weakIgnoreFolderVector;
     
     std::string selectorPrefix;
 };

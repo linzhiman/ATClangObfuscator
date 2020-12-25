@@ -11,6 +11,14 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+void trim(string &s)
+{
+    if (!s.empty()) {
+        s.erase(0, s.find_first_not_of(" "));
+        s.erase(s.find_last_not_of(" ") + 1);
+    }
+}
+
 std::string CSCache::getSelectorPrefix()
 {
     if (selectorPrefix.length() > 0) {
@@ -27,23 +35,51 @@ void CSCache::loadConfig(const std::string &filePath)
     bool prefix = false;
     bool whiteList = false;
     bool blackList = false;
+    bool strongIgnoreFolder = false;
+    bool weakIgnoreFolder = false;
     
-    while (!ifs.eof()) {
-        ifs >> tmp;
+    while (std::getline(ifs, tmp)) {
+        if (tmp.find("#") == 0) {
+            continue;
+        }
+        trim(tmp);
+        if (tmp.empty()) {
+            continue;
+        }
         if (tmp == "prefix:") {
             prefix = true;
             whiteList = false;
             blackList = false;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = false;
         }
         else if (tmp == "whiteList:") {
             prefix = false;
             whiteList = true;
             blackList = false;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = false;
         }
         else if (tmp == "blackList:") {
             prefix = false;
             whiteList = false;
             blackList = true;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = false;
+        }
+        else if (tmp == "strongIgnoreFolder:") {
+            prefix = false;
+            whiteList = false;
+            blackList = false;
+            strongIgnoreFolder = true;
+            weakIgnoreFolder = false;
+        }
+        else if (tmp == "weakIgnoreFolder:") {
+            prefix = false;
+            whiteList = false;
+            blackList = false;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = true;
         }
         else {
             if (prefix) {
@@ -54,6 +90,12 @@ void CSCache::loadConfig(const std::string &filePath)
             }
             else if (blackList) {
                 blackListSet.insert(tmp);
+            }
+            else if (strongIgnoreFolder) {
+                strongIgnoreFolderVector.push_back(tmp);
+            }
+            else if (weakIgnoreFolder) {
+                weakIgnoreFolderVector.push_back(tmp);
             }
         }
     }
@@ -194,4 +236,57 @@ void CSCache::saveIgnoreSelectors(const std::string &filePath)
             ofs << *it2 << "\n";
         }
     }
+}
+
+bool CSCache::isUserSourceCode(const std::string filename, bool checkWeakIgnoreFolder)
+{
+    if (filename.empty()) {
+        return false;
+    }
+    
+    if (filename.find("/Applications/Xcode.app/") == 0) {
+        return false;
+    }
+    
+    if (filename.find("/Xcode/DerivedData/") != filename.npos) {
+        return false;
+    }
+    
+    if (filename.find(".build/DerivedSources/") != filename.npos) {
+        return false;
+    }
+    
+    for (auto it = strongIgnoreFolderVector.begin(); it != strongIgnoreFolderVector.end(); ++it)
+    {
+        if (filename.find(*it) != std::string::npos) {
+            return false;
+        }
+    }
+    
+    if (!checkWeakIgnoreFolder) {
+        return true;
+    }
+    
+    for (auto it = weakIgnoreFolderVector.begin(); it != weakIgnoreFolderVector.end(); ++it)
+    {
+        if (filename.find(*it) != std::string::npos) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+std::vector<std::string> CSCache::filterNotUserSourceCode(const std::vector<std::string> &allFiles)
+{
+    std::vector<std::string> result;
+    result.reserve(allFiles.size());
+    
+    for (auto it = allFiles.begin();  it != allFiles.end(); ++it) {
+        if (isUserSourceCode(*it, false)) {
+            result.push_back(it->c_str());
+        }
+    }
+    
+    return result;
 }
