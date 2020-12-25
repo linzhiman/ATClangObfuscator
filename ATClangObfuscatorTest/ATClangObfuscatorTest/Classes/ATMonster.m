@@ -166,6 +166,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 
 @interface ATMonsterCenter ()
 
+/// property should NOT be obfuscated
 @property (nonatomic, weak) ATMonsterView *currentMonsterView;
 
 @end
