@@ -1,0 +1,23 @@
+# obfuscate selector prefix
+prefix:
+obfuscate_
+
+# class name, category name or protocol name, every class/category/protocol will be obfuscated when white list is empty
+whiteList:
+# ATAnimal
+# ATMonster(Action)
+# IATMonster
+
+# class name, category name or protocol name
+blackList:
+# ATAnimal
+# ATMonster(Action)
+# IATMonster
+
+# every file will not be obfuscated
+strongIgnoreFolder:
+# ThirdParty
+
+# any file will be obfuscated when it call method that should be obfuscated 
+weakIgnoreFolder:
+# ThirdParty
