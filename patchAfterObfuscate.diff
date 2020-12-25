@@ -292,7 +292,7 @@ index e938a48..ad06ce2 100644
      NSLog(@"do nothing");
  }
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
-index f1b5f17..07c3e21 100644
+index 11f3fa9..a8c8dc4 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.h
 @@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
@@ -315,10 +315,10 @@ index f1b5f17..07c3e21 100644
 -- (ATMonster *)create;
 +- (ATMonster *)sealion_create;
  
- @end
- 
+ /// getter/setter should NOT be obfuscated
+ - (UIView *)currentMonsterView;
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
-index 4c5c5a3..f71810b 100644
+index 48a2ae8..dffe06a 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 @@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
@@ -398,7 +398,7 @@ index 4c5c5a3..f71810b 100644
  {
      NSLog(@"do nothing");
  }
-@@ -169,20 +169,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -176,20 +176,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
  
  /// should be obfuscated
