@@ -87,6 +87,12 @@ AT_IMPLEMENT_SINGLETON(ATTest);
     
     /// run should NOT be obfuscated
     [tmp run];
+    
+    /// new should NOT be obfuscated
+    id<IATMonster> monsterEx = [ATMonsterEx new];
+    
+    /// should be obfuscated
+    [monsterEx scare];
 }
 
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
