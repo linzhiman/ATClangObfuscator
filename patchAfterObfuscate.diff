@@ -440,7 +440,7 @@ index 0184c58..24ff8a8 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-index 002ad27..cb5e4cf 100644
+index a42dda7..795478c 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 @@ -26,22 +26,22 @@ AT_IMPLEMENT_SINGLETON(ATTest);
@@ -510,7 +510,14 @@ index 002ad27..cb5e4cf 100644
      
      /// run should NOT be obfuscated
      [tmp run];
-@@ -92,7 +92,7 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+@@ -92,13 +92,13 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+     id<IATMonster> monsterEx = [ATMonsterEx new];
+     
+     /// should be obfuscated
+-    [monsterEx scare];
++    [monsterEx obfuscate_scare];
+ }
+ 
  AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
  {
      /// should be obfuscated
