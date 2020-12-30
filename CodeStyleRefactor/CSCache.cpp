@@ -136,15 +136,27 @@ void CSCache::addClsNameIntoBlackList(const std::string& clsName)
     blackListSet.insert(clsName);
 }
 
-bool CSCache::checkWhiteBlackList(const std::string &clsName) const
+bool CSCache::isInWhiteList(const std::string &clsName) const
 {
-    if (blackListSet.find(clsName) != blackListSet.end()) {
-        return false;
+    std::string clsNameEx = clsName;
+    int nPos = clsNameEx.find("(");
+    if (nPos != -1) {
+        clsNameEx = clsNameEx.substr(0, nPos);
     }
     if (whiteListSet.size() > 0) {
-        return whiteListSet.find(clsName) != whiteListSet.end();
+        return whiteListSet.find(clsNameEx) != whiteListSet.end();
     }
     return true;
+}
+
+bool CSCache::isInBlackList(const std::string &clsName) const
+{
+    std::string clsNameEx = clsName;
+    int nPos = clsNameEx.find("(");
+    if (nPos != -1) {
+        clsNameEx = clsNameEx.substr(0, nPos);
+    }
+    return blackListSet.find(clsNameEx) != blackListSet.end();
 }
 
 bool CSCache::ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const

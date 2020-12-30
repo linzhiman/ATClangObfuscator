@@ -269,8 +269,11 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
         return false;
     }
     
-    bool checkWhiteBlackList = !isMacroExpansion(decl);
+    if (isMacroExpansion(decl)) {
+        return true;
+    }
     
+    bool inWhiteList = false;
     std::vector<ObjCProtocolDecl *> protocols = getDefineProtocols(decl);
     for (ObjCProtocolDecl *protocol : protocols) {
         if (mCache->ignoreProtocolSelector(protocol->getNameAsString(), decl->getSelector().getAsString())) {
@@ -280,8 +283,13 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
         if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
             return false;
         }
-        else if (checkWhiteBlackList && !mCache->checkWhiteBlackList(protocol->getNameAsString())) {
-            return false;
+        else {
+            if (mCache->isInBlackList(protocol->getNameAsString())) {
+                return false;
+            }
+            if (mCache->isInWhiteList(protocol->getNameAsString())) {
+                inWhiteList = true;
+            }
         }
     }
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
@@ -289,12 +297,16 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
         if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
             return false;
         }
-        else if (checkWhiteBlackList && !mCache->checkWhiteBlackList(getClassName(method))) {
-            return false;
+        else {
+            if (mCache->isInBlackList(getClassName(method))) {
+                return false;
+            }
+            if (mCache->isInWhiteList(getClassName(method))) {
+                inWhiteList = true;
+            }
         }
     }
-    
-    return true;
+    return inWhiteList;
 }
 
 std::string CSHelper::getClassName(ObjCMethodDecl *decl)

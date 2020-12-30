@@ -28,7 +28,8 @@ public:
     
     void addClsNameIntoWhiteList(const std::string& clsName);
     void addClsNameIntoBlackList(const std::string& clsName);
-    bool checkWhiteBlackList(const std::string &clsName) const;
+    bool isInWhiteList(const std::string &clsName) const;
+    bool isInBlackList(const std::string &clsName) const;
     
     bool ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const;
     void addIgnoreProtocolSelector(const std::string& protocol, const std::string& selector);
