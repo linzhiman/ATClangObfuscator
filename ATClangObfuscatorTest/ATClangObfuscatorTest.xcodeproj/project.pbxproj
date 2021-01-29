@@ -49,6 +49,7 @@
 		DC7B0C772512FB1800534550 /* ATMonster+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATMonster+Action.h"; sourceTree = "<group>"; };
 		DC7B0C782512FB1800534550 /* ATMonster+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATMonster+Action.m"; sourceTree = "<group>"; };
 		DC7B0CAB251446DC00534550 /* ATMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATMacro.h; sourceTree = "<group>"; };
+		DCBC1BA125C41ADC000297C6 /* ATDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATDefine.h; sourceTree = "<group>"; };
 		DCE9ED50252088B100E6EE2D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -101,6 +102,7 @@
 		DC7B0C642512EE4D00534550 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				DCBC1BA025C41ADC000297C6 /* Define */,
 				DC7B0CAB251446DC00534550 /* ATMacro.h */,
 				DC7B0C652512EF9700534550 /* ATAnimal.h */,
 				DC7B0C662512EF9700534550 /* ATAnimal.m */,
@@ -127,6 +129,14 @@
 				DCE9ED50252088B100E6EE2D /* UIKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DCBC1BA025C41ADC000297C6 /* Define */ = {
+			isa = PBXGroup;
+			children = (
+				DCBC1BA125C41ADC000297C6 /* ATDefine.h */,
+			);
+			path = Define;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

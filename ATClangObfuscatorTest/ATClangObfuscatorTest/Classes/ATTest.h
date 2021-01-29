@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ATMacro.h"
+#import "ATDefine.h"
 
 @class ATMonster;
 
@@ -17,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ATTest : NSObject
 
 AT_DECLARE_SINGLETON;
+AT_DECLARE_CREATE_OBJ;
 
 /// should be obfuscated
 - (void)test;

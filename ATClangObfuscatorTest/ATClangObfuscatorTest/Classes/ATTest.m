@@ -15,6 +15,7 @@
 @implementation ATTest
 
 AT_IMPLEMENT_SINGLETON(ATTest);
+AT_IMPLEMENT_CREATE_OBJ(ATTest);
 
 /// sys method should NOT be obfuscated
 - (instancetype)init
@@ -26,6 +27,7 @@ AT_IMPLEMENT_SINGLETON(ATTest);
     return self;
 }
 
+/// should be obfuscated
 - (void)test
 {
     /// should be obfuscated
@@ -93,6 +95,12 @@ AT_IMPLEMENT_SINGLETON(ATTest);
     
     /// should be obfuscated
     [monsterEx scare];
+    
+    /// should be obfuscated
+    ATTest *newObj = [ATTest createObj];
+    
+    /// should be obfuscated
+    [newObj test];
 }
 
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
