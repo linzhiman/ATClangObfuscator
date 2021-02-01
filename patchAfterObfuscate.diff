@@ -423,11 +423,11 @@ index 48a2ae8..c57eb43 100644
      return ex;
  }
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
-index 0184c58..24ff8a8 100644
+index 7942045..dab6fe0 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
-@@ -19,10 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
- AT_DECLARE_SINGLETON;
+@@ -21,10 +21,10 @@ AT_DECLARE_SINGLETON;
+ AT_DECLARE_CREATE_OBJ;
  
  /// should be obfuscated
 -- (void)test;
@@ -440,13 +440,13 @@ index 0184c58..24ff8a8 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-index a42dda7..795478c 100644
+index c2a2fca..6462401 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-@@ -26,22 +26,22 @@ AT_IMPLEMENT_SINGLETON(ATTest);
-     return self;
+@@ -28,22 +28,22 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
  }
  
+ /// should be obfuscated
 -- (void)test
 +- (void)obfuscate_test
  {
@@ -471,7 +471,7 @@ index a42dda7..795478c 100644
      
      /// new should NOT be obfuscated
      ATBird *bird = [ATBird new];
-@@ -59,31 +59,31 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+@@ -61,31 +61,31 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
      bird.full = full;
      
      /// not property should be obfuscated
@@ -510,12 +510,20 @@ index a42dda7..795478c 100644
      
      /// run should NOT be obfuscated
      [tmp run];
-@@ -92,13 +92,13 @@ AT_IMPLEMENT_SINGLETON(ATTest);
+@@ -94,19 +94,19 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
      id<IATMonster> monsterEx = [ATMonsterEx new];
      
      /// should be obfuscated
 -    [monsterEx scare];
 +    [monsterEx obfuscate_scare];
+     
+     /// should be obfuscated
+-    ATTest *newObj = [ATTest createObj];
++    ATTest *newObj = [ATTest obfuscate_createObj];
+     
+     /// should be obfuscated
+-    [newObj test];
++    [newObj obfuscate_test];
  }
  
  AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
