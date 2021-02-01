@@ -534,6 +534,23 @@ index c2a2fca..6462401 100644
      
      ATMonsterCenterObjCreate;
  }
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h
+index e75a964..20d150f 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h
+@@ -12,10 +12,10 @@
+ /// createObj should be obfuscated
+ 
+ #define AT_DECLARE_CREATE_OBJ \
+-+ (instancetype)createObj;
+++ (instancetype)obfuscate_createObj;
+ 
+ #define AT_IMPLEMENT_CREATE_OBJ(atType) \
+-+ (instancetype)createObj { \
+++ (instancetype)obfuscate_createObj { \
+     return [[atType alloc] init]; \
+ }
+ 
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h
 index edb48db..e46afb3 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATBird.h
