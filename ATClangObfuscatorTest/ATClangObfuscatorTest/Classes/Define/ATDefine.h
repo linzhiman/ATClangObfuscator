@@ -12,10 +12,10 @@
 /// createObj should be obfuscated
 
 #define AT_DECLARE_CREATE_OBJ \
-+ (instancetype)obfuscate_createObj;
++ (instancetype)createObj;
 
 #define AT_IMPLEMENT_CREATE_OBJ(atType) \
-+ (instancetype)obfuscate_createObj { \
++ (instancetype)createObj { \
     return [[atType alloc] init]; \
 }
 
