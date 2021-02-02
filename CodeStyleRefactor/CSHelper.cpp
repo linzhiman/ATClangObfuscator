@@ -364,11 +364,6 @@ bool CSHelper::isNeedObfuscate(ObjCMessageExpr *expr)
         return false;
     }
     
-    std::string filePath = getFilename(decl);
-    if (!mCache->isUserSourceCode(filePath, true)) {
-        return false;
-    }
-    
     return isNeedObfuscate(decl, false);
 }
 
