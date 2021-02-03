@@ -109,6 +109,14 @@ AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
     [ATMonsterCenterObj create];
     
     ATMonsterCenterObjCreate;
+    
+    /// getter/setter should NOT be obfuscated
+    UIView *tmp = [ATMonsterCenterObj currentMonsterView];
+    
+    /// getter/setter should NOT be obfuscated
+    if (tmp == ATMonsterCenterObj.currentMonsterView) {
+        tmp = nil;
+    }
 }
 
 @end
