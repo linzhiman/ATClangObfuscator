@@ -440,7 +440,7 @@ index 7942045..dab6fe0 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-index c2a2fca..6462401 100644
+index 7b15998..89257b4 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 @@ -28,22 +28,22 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
@@ -533,7 +533,7 @@ index c2a2fca..6462401 100644
 +    [ATMonsterCenterObj obfuscate_create];
      
      ATMonsterCenterObjCreate;
- }
+     
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h
 index e75a964..20d150f 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Define/ATDefine.h
