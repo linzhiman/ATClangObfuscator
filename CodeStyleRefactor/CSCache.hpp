@@ -34,6 +34,9 @@ public:
     bool ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const;
     void addIgnoreProtocolSelector(const std::string& protocol, const std::string& selector);
     
+    bool isClsGetterOrSetter(const std::string& clsName, const std::string& selector) const;
+    void addClsGetterOrSetter(const std::string& clsName, const std::string& selector);
+    
     bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
     void loadIgnoreSelectors(const std::string &filePath);
@@ -48,6 +51,9 @@ private:
     
     //协议名:方法列表
     std::map<std::string, std::set<std::string>> protocolSelectorMap;
+    
+    //类名:方法列表
+    std::map<std::string, std::set<std::string>> clsGetterSetterMap;
     
     //selector列表
     std::set<std::string> selectorSet;

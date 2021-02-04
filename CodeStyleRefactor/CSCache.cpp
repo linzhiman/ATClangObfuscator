@@ -182,6 +182,29 @@ void CSCache::addIgnoreProtocolSelector(const std::string& protocol, const std::
     }
 }
 
+bool CSCache::isClsGetterOrSetter(const std::string& clsName, const std::string& selector) const
+{
+    auto it = clsGetterSetterMap.find(clsName);
+    if (it != clsGetterSetterMap.end()) {
+        return it->second.find(selector) != it->second.end();
+    }
+    return false;
+}
+
+void CSCache::addClsGetterOrSetter(const std::string& clsName, const std::string& selector)
+{
+    llvm::outs() << "addClsGetterOrSetter\t" << clsName << "\t" << selector << "\n";
+    
+    auto it = clsGetterSetterMap.find(clsName);
+    if (it != clsGetterSetterMap.end()) {
+        it->second.insert(selector);
+    }
+    else {
+        clsGetterSetterMap[clsName] = std::set<std::string>();
+        clsGetterSetterMap[clsName].insert(selector);
+    }
+}
+
 bool CSCache::ignoreSelector(const std::string& selector) const
 {
     return selectorSet.find(selector) != selectorSet.end();

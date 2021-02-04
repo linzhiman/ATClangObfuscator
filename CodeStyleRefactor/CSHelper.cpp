@@ -107,23 +107,27 @@ std::string CSHelper::getFilename(ObjCMessageExpr *expr)
     return mSourceManager->getFilename(getLoc(expr)).str();
 }
 
-bool CSHelper::isGetterOrSetter(ObjCMethodDecl *decl, ObjCContainerDecl *containerDecl)
+bool CSHelper::isGetterOrSetter(ObjCMethodDecl *decl, ObjCInterfaceDecl *interfaceDecl)
 {
     Selector selector = decl->getSelector();
     
     if (decl->isInstanceMethod()) {
-        for (const auto *I : containerDecl->instance_properties()) {
+        for (const auto *I : interfaceDecl->instance_properties()) {
             if (selector == I->getGetterName() || selector == I->getSetterName()) {
                 return true;
             }
         }
     }
     else {
-        for (const auto *I : containerDecl->class_properties()) {
+        for (const auto *I : interfaceDecl->class_properties()) {
             if (selector == I->getGetterName() || selector == I->getSetterName()) {
                 return true;
             }
         }
+    }
+    
+    if (mCache->isClsGetterOrSetter(interfaceDecl->getNameAsString(), selector.getAsString())) {
+        return true;
     }
     
     return false;
@@ -143,7 +147,7 @@ bool CSHelper::isPropertyAccessor(ObjCMethodDecl *decl)
     }
     else if (parentKind == Decl::ObjCCategory || parentKind == Decl::ObjCCategoryImpl) {
         ObjCCategoryDecl *categoryDecl = parentKind == Decl::ObjCCategory ? cast<ObjCCategoryDecl>(parent) : cast<ObjCCategoryImplDecl>(parent)->getCategoryDecl();
-        return isGetterOrSetter(decl, categoryDecl);
+        return isGetterOrSetter(decl, categoryDecl->getClassInterface());
     }
     
     return false;
@@ -402,6 +406,26 @@ void CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl)
         std::vector<ObjCProtocolDecl *> protocols = getDefineProtocols(decl);
         for (ObjCProtocolDecl *protocol : protocols) {
             addIgnoreProtocolSelector(decl, protocol);
+        }
+    }
+}
+
+void CSHelper::addClassProperty(ObjCPropertyDecl *decl)
+{
+    ObjCMethodDecl *getterDecl = decl->getGetterMethodDecl();
+    ObjCMethodDecl *setterDecl = decl->getSetterMethodDecl();
+    
+    ObjCInterfaceDecl *interfaceDecl = NULL;
+    if (getterDecl) {
+        interfaceDecl = getterDecl->getClassInterface();
+        if (interfaceDecl && mCache->isUserSourceCode(getFilename(interfaceDecl), false)) {
+            mCache->addClsGetterOrSetter(interfaceDecl->getNameAsString(), getterDecl->getSelector().getAsString());
+        }
+    }
+    if (setterDecl) {
+        interfaceDecl = setterDecl->getClassInterface();
+        if (interfaceDecl && mCache->isUserSourceCode(getFilename(interfaceDecl), false)) {
+            mCache->addClsGetterOrSetter(interfaceDecl->getNameAsString(), setterDecl->getSelector().getAsString());
         }
     }
 }

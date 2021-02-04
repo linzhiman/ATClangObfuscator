@@ -308,6 +308,15 @@ public:
         return RecursiveASTVisitor<CodeStyleSelectorVisitor>::TraverseObjCMethodDecl(decl);
     }
     
+    bool TraverseObjCPropertyDecl(ObjCPropertyDecl *decl)
+    {
+//        llvm::outs() << "TraverseObjCPropertyDecl:" << decl->getNameAsString() << "\n";
+        
+        gHelper.addClassProperty(decl);
+        
+        return RecursiveASTVisitor<CodeStyleSelectorVisitor>::TraverseObjCPropertyDecl(decl);
+    }
+    
     bool VisitObjCSelectorExpr(ObjCSelectorExpr *expr)
     {
         Selector sel = expr->getSelector();
@@ -440,7 +449,7 @@ int main(int argc, const char **argv)
         if (int Result = tool.run(factory.get())) {
             return Result;
         }
-        gCache.saveIgnoreSelectors(selectorFilePath);
+//        gCache.saveIgnoreSelectors(selectorFilePath);
     }
     
     gCache.clearClsName();

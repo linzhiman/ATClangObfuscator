@@ -45,6 +45,8 @@ public:
     
     void addIgnoreProtocolSelector(ObjCMethodDecl *decl);
     
+    void addClassProperty(ObjCPropertyDecl *decl);
+    
 private:
     std::string mGetterPrefix;
     std::string mSetterPrefix;
@@ -60,7 +62,7 @@ private:
     
     std::string getClassName(ObjCMethodDecl *decl);
     
-    bool isGetterOrSetter(ObjCMethodDecl *decl, ObjCContainerDecl *containerDecl);
+    bool isGetterOrSetter(ObjCMethodDecl *decl, ObjCInterfaceDecl *containerDecl);
     bool isPropertyAccessor(ObjCMethodDecl *decl);
     bool isMacroExpansion(ObjCMethodDecl *decl);
     std::vector<ObjCProtocolDecl *> getAllProtocols(ObjCProtocolDecl *protocol);
