@@ -14,4 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface NSObject (ATOther)
+
+/// should be obfuscated
+- (void)publicMethod;
+
+@end
+
 NS_ASSUME_NONNULL_END

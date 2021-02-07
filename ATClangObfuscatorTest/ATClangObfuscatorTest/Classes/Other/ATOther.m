@@ -48,3 +48,21 @@
 }
 
 @end
+
+
+@implementation NSObject (ATOther)
+
+/// should be obfuscated
+- (void)publicMethod
+{
+    /// should be obfuscated
+    [self privateMethod];
+}
+
+/// should be obfuscated
+- (void)privateMethod
+{
+    ;;
+}
+
+@end
