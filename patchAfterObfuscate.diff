@@ -606,3 +606,44 @@ index 79c959f..a5e2e45 100644
  
  @end
  
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
+index 3f64885..e43fb82 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
+@@ -17,13 +17,13 @@
+     self = [super init];
+     if (self) {
+         /// should be obfuscated
+-        [self other];
++        [self obfuscate_other];
+     }
+     return self;
+ }
+ 
+ /// should be obfuscated
+-- (void)other
++- (void)obfuscate_other
+ {
+     /// sys method should NOT be obfuscated
+     UIView *tmp = [[UIView alloc] initWithFrame:CGRectZero];
+@@ -32,17 +32,17 @@
+     [tmp sizeToFit];
+     
+     /// should be obfuscated
+-    [self private];
++    [self obfuscate_private];
+     
+     /// sys method should NOT be obfuscated
+     ATAnimal *animal = [ATAnimal new];
+     
+     /// should be obfuscated
+-    [animal sleep];
++    [animal obfuscate_sleep];
+ }
+ 
+ /// should be obfuscated
+-- (void)private
++- (void)obfuscate_private
+ {
+     ;;
+ }
