@@ -101,6 +101,9 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
     
     /// should be obfuscated
     [newObj test];
+    
+    /// onATMonsterCreate is written in ScratchSpace should NOT be obfuscated
+    [self onATMonsterCreate:nil];
 }
 
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
