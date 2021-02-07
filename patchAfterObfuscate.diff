@@ -606,8 +606,21 @@ index 79c959f..a5e2e45 100644
  
  @end
  
+diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.h
+index 34767a2..2045754 100644
+--- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.h
++++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.h
+@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @interface NSObject (ATOther)
+ 
+ /// should be obfuscated
+-- (void)publicMethod;
++- (void)obfuscate_publicMethod;
+ 
+ @end
+ 
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
-index 3f64885..e43fb82 100644
+index cfd6e5c..329f31d 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/Other/ATOther.m
 @@ -17,13 +17,13 @@
@@ -644,6 +657,24 @@ index 3f64885..e43fb82 100644
  /// should be obfuscated
 -- (void)private
 +- (void)obfuscate_private
+ {
+     ;;
+ }
+@@ -53,14 +53,14 @@
+ @implementation NSObject (ATOther)
+ 
+ /// should be obfuscated
+-- (void)publicMethod
++- (void)obfuscate_publicMethod
+ {
+     /// should be obfuscated
+-    [self privateMethod];
++    [self obfuscate_privateMethod];
+ }
+ 
+ /// should be obfuscated
+-- (void)privateMethod
++- (void)obfuscate_privateMethod
  {
      ;;
  }
