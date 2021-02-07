@@ -20,6 +20,7 @@
 		DC7B0C762512F87D00534550 /* ATTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C752512F87D00534550 /* ATTest.m */; };
 		DC7B0C792512FB1800534550 /* ATMonster+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C782512FB1800534550 /* ATMonster+Action.m */; };
 		DCC35A0E25CF980D006BDF7F /* ATOther.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC35A0D25CF980D006BDF7F /* ATOther.m */; };
+		DCC35A1325CFC3BA006BDF7F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCC35A1225CFC3BA006BDF7F /* CoreGraphics.framework */; };
 		DCE9ED51252088B100E6EE2D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE9ED50252088B100E6EE2D /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		DCBC1BA125C41ADC000297C6 /* ATDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATDefine.h; sourceTree = "<group>"; };
 		DCC35A0C25CF980D006BDF7F /* ATOther.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATOther.h; sourceTree = "<group>"; };
 		DCC35A0D25CF980D006BDF7F /* ATOther.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATOther.m; sourceTree = "<group>"; };
+		DCC35A1225CFC3BA006BDF7F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		DCE9ED50252088B100E6EE2D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -61,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCC35A1325CFC3BA006BDF7F /* CoreGraphics.framework in Frameworks */,
 				DCE9ED51252088B100E6EE2D /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,6 +133,7 @@
 		DC7B0C8D25143E1700534550 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DCC35A1225CFC3BA006BDF7F /* CoreGraphics.framework */,
 				DCE9ED50252088B100E6EE2D /* UIKit.framework */,
 			);
 			name = Frameworks;
