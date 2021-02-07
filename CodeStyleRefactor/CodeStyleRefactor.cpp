@@ -44,7 +44,7 @@ public:
     
     bool TraverseObjCProtocolDecl(ObjCProtocolDecl *decl)
     {
-        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), false)) {
             return true;
         }
         
@@ -77,7 +77,7 @@ public:
     
     bool TraverseObjCInterfaceDecl(ObjCInterfaceDecl *decl)
     {
-        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), false)) {
             return true;
         }
         
@@ -130,7 +130,7 @@ public:
     
     bool TraverseObjCCategoryDecl(ObjCCategoryDecl *decl)
     {
-        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), true)) {
+        if (!gCache.isUserSourceCode(gHelper.getFilename(decl), false)) {
             return true;
         }
         

@@ -301,7 +301,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
     }
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
         std::string filePath = getFilename(method);
-        if (!mCache->isUserSourceCode(filePath, isMessage)) {
+        if (!mCache->isUserSourceCode(filePath, true)) {
             return false;
         }
         else {
