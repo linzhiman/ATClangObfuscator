@@ -19,6 +19,7 @@
 		DC7B0C722512F6A200534550 /* ATMonster.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C712512F6A200534550 /* ATMonster.m */; };
 		DC7B0C762512F87D00534550 /* ATTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C752512F87D00534550 /* ATTest.m */; };
 		DC7B0C792512FB1800534550 /* ATMonster+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7B0C782512FB1800534550 /* ATMonster+Action.m */; };
+		DCC35A0E25CF980D006BDF7F /* ATOther.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC35A0D25CF980D006BDF7F /* ATOther.m */; };
 		DCE9ED51252088B100E6EE2D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE9ED50252088B100E6EE2D /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,8 @@
 		DC7B0C782512FB1800534550 /* ATMonster+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATMonster+Action.m"; sourceTree = "<group>"; };
 		DC7B0CAB251446DC00534550 /* ATMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATMacro.h; sourceTree = "<group>"; };
 		DCBC1BA125C41ADC000297C6 /* ATDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATDefine.h; sourceTree = "<group>"; };
+		DCC35A0C25CF980D006BDF7F /* ATOther.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATOther.h; sourceTree = "<group>"; };
+		DCC35A0D25CF980D006BDF7F /* ATOther.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATOther.m; sourceTree = "<group>"; };
 		DCE9ED50252088B100E6EE2D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -102,6 +105,7 @@
 		DC7B0C642512EE4D00534550 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				DCC35A0B25CF975F006BDF7F /* Other */,
 				DCBC1BA025C41ADC000297C6 /* Define */,
 				DC7B0CAB251446DC00534550 /* ATMacro.h */,
 				DC7B0C652512EF9700534550 /* ATAnimal.h */,
@@ -137,6 +141,15 @@
 				DCBC1BA125C41ADC000297C6 /* ATDefine.h */,
 			);
 			path = Define;
+			sourceTree = "<group>";
+		};
+		DCC35A0B25CF975F006BDF7F /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				DCC35A0C25CF980D006BDF7F /* ATOther.h */,
+				DCC35A0D25CF980D006BDF7F /* ATOther.m */,
+			);
+			path = Other;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,6 +231,7 @@
 				DC7B0C6D2512EFBF00534550 /* ATBird.m in Sources */,
 				DC7B0C672512EF9700534550 /* ATAnimal.m in Sources */,
 				DC7B0C6A2512EFA700534550 /* ATFish.m in Sources */,
+				DCC35A0E25CF980D006BDF7F /* ATOther.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
