@@ -256,13 +256,13 @@ std::vector<ObjCMethodDecl *> CSHelper::getDefineMethods(ObjCMethodDecl *decl)
         }
     }
     else {
-        llvm::outs() << "\t\t"  << "isNeedObfuscate" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
+        llvm::outs() << "\t\t"  << "[!NotHandle]" << "\t" << selector.getAsString() << "\t" << parentKind << "\n";
     }
     
     return defineMethods;
 }
 
-bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
+bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
 {
     ObjCMethodFamily family = decl->getMethodFamily();
     if (family != OMF_None && family != OMF_performSelector) {
@@ -284,7 +284,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
             return false;
         }
         std::string filePath = getFilename(protocol);
-        if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
+        if (!mCache->isUserSourceCode(filePath, !isMessage)) {
             return false;
         }
         else {
@@ -301,7 +301,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder)
     }
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
         std::string filePath = getFilename(method);
-        if (!mCache->isUserSourceCode(filePath, checkIgnoreFolder)) {
+        if (!mCache->isUserSourceCode(filePath, isMessage)) {
             return false;
         }
         else {
@@ -346,7 +346,7 @@ std::string CSHelper::getClassName(ObjCMethodDecl *decl)
 
 bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl)
 {
-    return isNeedObfuscate(decl, true);
+    return isNeedObfuscate(decl, false);
 }
 
 void CSHelper::obfuscate(ObjCMethodDecl *decl)
@@ -371,7 +371,7 @@ bool CSHelper::isNeedObfuscate(ObjCMessageExpr *expr)
         return false;
     }
     
-    return isNeedObfuscate(decl, false);
+    return isNeedObfuscate(decl, true);
 }
 
 void CSHelper::obfuscate(ObjCMessageExpr *expr, ASTContext *context)

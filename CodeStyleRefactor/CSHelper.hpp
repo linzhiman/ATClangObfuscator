@@ -68,7 +68,7 @@ private:
     std::vector<ObjCProtocolDecl *> getAllProtocols(ObjCProtocolDecl *protocol);
     std::vector<ObjCProtocolDecl *> getDefineProtocols(ObjCMethodDecl *decl);
     std::vector<ObjCMethodDecl *> getDefineMethods(ObjCMethodDecl *decl);
-    bool isNeedObfuscate(ObjCMethodDecl *decl, bool checkIgnoreFolder);
+    bool isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage);
     
     bool addIgnoreProtocolSelector(ObjCMethodDecl *decl, ObjCProtocolDecl *protocol);
     
