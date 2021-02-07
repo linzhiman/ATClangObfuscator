@@ -39,8 +39,9 @@ public:
     
     bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
-    void loadIgnoreSelectors(const std::string &filePath);
-    void saveIgnoreSelectors(const std::string &filePath);
+    
+    void loadCache(const std::string &filePath);
+    void saveCache(const std::string &filePath);
     
     bool isUserSourceCode(const std::string filename, bool checkWeakIgnoreFolder);
     std::vector<std::string> filterNotUserSourceCode(const std::vector<std::string> &allFiles);

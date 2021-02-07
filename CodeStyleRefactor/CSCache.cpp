@@ -218,31 +218,43 @@ void CSCache::addIgnoreSelector(const std::string& selector)
     }
 }
 
-void CSCache::loadIgnoreSelectors(const std::string &filePath)
+void CSCache::loadCache(const std::string &filePath)
 {
     std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
     
     std::string ignore;
     int count;
     int count2;
-    std::string protocolTemp;
-    std::string selectorTemp;
+    std::string keyTemp;
+    std::string valueTemp;
     
     while (!ifs.eof()) {
         ifs >> ignore >> count;
         while (count > 0) {
-            ifs >> selectorTemp;
-            selectorSet.insert(selectorTemp);
+            ifs >> valueTemp;
+            selectorSet.insert(valueTemp);
             count--;
         }
         ifs >> ignore >> count;
         while (count > 0) {
-            ifs >> protocolTemp;
-            protocolSelectorMap[protocolTemp] = std::set<std::string>();
+            ifs >> keyTemp;
+            protocolSelectorMap[keyTemp] = std::set<std::string>();
             ifs >> ignore >> count2;
             while (count2 > 0) {
-                ifs >> selectorTemp;
-                protocolSelectorMap[protocolTemp].insert(selectorTemp);
+                ifs >> valueTemp;
+                protocolSelectorMap[keyTemp].insert(valueTemp);
+                count2--;
+            }
+            count--;
+        }
+        ifs >> ignore >> count;
+        while (count > 0) {
+            ifs >> keyTemp;
+            clsGetterSetterMap[keyTemp] = std::set<std::string>();
+            ifs >> ignore >> count2;
+            while (count2 > 0) {
+                ifs >> valueTemp;
+                clsGetterSetterMap[keyTemp].insert(valueTemp);
                 count2--;
             }
             count--;
@@ -250,7 +262,7 @@ void CSCache::loadIgnoreSelectors(const std::string &filePath)
     }
 }
 
-void CSCache::saveIgnoreSelectors(const std::string &filePath)
+void CSCache::saveCache(const std::string &filePath)
 {
     std::ofstream ofs = std::ofstream(filePath, std::ofstream::out);
     
@@ -267,6 +279,18 @@ void CSCache::saveIgnoreSelectors(const std::string &filePath)
     for (auto it = protocolSelectorMap.begin(); it != protocolSelectorMap.end(); ++it) {
         ofs << it->first << "\n";
         ofs <<"ignoreProtocolSelectorSelectorCount:" << "\t" << it->second.size() << "\n";
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            ofs << *it2 << "\n";
+        }
+    }
+    
+    ofs << "\n";
+    
+    ofs <<"clsGetterSetterMapClsCount:" << "\t" << clsGetterSetterMap.size() << "\n";
+    
+    for (auto it = clsGetterSetterMap.begin(); it != clsGetterSetterMap.end(); ++it) {
+        ofs << it->first << "\n";
+        ofs <<"clsGetterSetterMapGetterSetterCount:" << "\t" << it->second.size() << "\n";
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
             ofs << *it2 << "\n";
         }

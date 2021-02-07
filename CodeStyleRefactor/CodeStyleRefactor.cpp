@@ -440,16 +440,16 @@ int main(int argc, const char **argv)
     gHelper.setReplacementsMap(&tool.getReplacements());
     gHelper.setCache(&gCache);
     
-    std::string selectorFilePath = sourceDir + "ignoreSelectors.txt";
+    std::string selectorFilePath = sourceDir + "obfuscatorCache.txt";
     if (sys::fs::exists(selectorFilePath)) {
-        gCache.loadIgnoreSelectors(selectorFilePath);
+        gCache.loadCache(selectorFilePath);
     }
     else {
         runSelectorComsumer = true;
         if (int Result = tool.run(factory.get())) {
             return Result;
         }
-//        gCache.saveIgnoreSelectors(selectorFilePath);
+        gCache.saveCache(selectorFilePath);
     }
     
     gCache.clearClsName();
