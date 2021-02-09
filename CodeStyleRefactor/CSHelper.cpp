@@ -294,7 +294,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
             return false;
         }
         std::string filePath = getFilename(protocol);
-        if (!mCache->isUserSourceCode(filePath, !isMessage)) {
+        if (!mCache->isUserSourceCode(filePath, true)) {
             return false;
         }
         else {
