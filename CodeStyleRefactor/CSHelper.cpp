@@ -153,13 +153,22 @@ bool CSHelper::isPropertyAccessor(ObjCMethodDecl *decl)
     return false;
 }
 
-bool CSHelper::isMacroExpansion(ObjCMethodDecl *decl)
+bool CSHelper::isMacroExpansion(ObjCMethodDecl *decl, bool *isWrittenInScratchSpace)
 {
+    bool isMacro = false;
+    bool isInScratchSpace = false;
     SourceLocation loc = decl->getSelectorStartLoc();
     if (mSourceManager->isMacroBodyExpansion(loc) || mSourceManager->isMacroArgExpansion(loc)) {
-        return true;
+        isMacro = true;
+        loc = mSourceManager->getSpellingLoc(loc);
+        if (mSourceManager->isWrittenInScratchSpace(loc)) {
+            isInScratchSpace = true;
+        }
     }
-    return false;
+    if (isWrittenInScratchSpace) {
+        *isWrittenInScratchSpace = isInScratchSpace;
+    }
+    return isMacro;
 }
 
 std::vector<ObjCProtocolDecl *> CSHelper::getAllProtocols(ObjCProtocolDecl *protocol)
@@ -273,8 +282,9 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
         return false;
     }
     
-    if (isMacroExpansion(decl)) {
-        return true;
+    bool isWrittenInScratchSpace = false;
+    if (isMacroExpansion(decl, &isWrittenInScratchSpace)) {
+        return !isWrittenInScratchSpace;
     }
     
     bool inWhiteList = false;

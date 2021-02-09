@@ -64,7 +64,7 @@ private:
     
     bool isGetterOrSetter(ObjCMethodDecl *decl, ObjCInterfaceDecl *containerDecl);
     bool isPropertyAccessor(ObjCMethodDecl *decl);
-    bool isMacroExpansion(ObjCMethodDecl *decl);
+    bool isMacroExpansion(ObjCMethodDecl *decl, bool *isWrittenInScratchSpace);
     std::vector<ObjCProtocolDecl *> getAllProtocols(ObjCProtocolDecl *protocol);
     std::vector<ObjCProtocolDecl *> getDefineProtocols(ObjCMethodDecl *decl);
     std::vector<ObjCMethodDecl *> getDefineMethods(ObjCMethodDecl *decl);
