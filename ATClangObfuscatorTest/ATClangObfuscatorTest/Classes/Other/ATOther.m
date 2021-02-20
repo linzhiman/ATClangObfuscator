@@ -17,13 +17,13 @@
     self = [super init];
     if (self) {
         /// should be obfuscated
-        [self obfuscate_other];
+        [self other];
     }
     return self;
 }
 
 /// should be obfuscated
-- (void)obfuscate_other
+- (void)other
 {
     /// sys method should NOT be obfuscated
     UIView *tmp = [[UIView alloc] initWithFrame:CGRectZero];
@@ -32,17 +32,17 @@
     [tmp sizeToFit];
     
     /// should be obfuscated
-    [self obfuscate_private];
+    [self private];
     
     /// sys method should NOT be obfuscated
     ATAnimal *animal = [ATAnimal new];
     
     /// should be obfuscated
-    [animal obfuscate_sleep];
+    [animal sleep];
 }
 
 /// should be obfuscated
-- (void)obfuscate_private
+- (void)private
 {
     ;;
 }
@@ -53,14 +53,14 @@
 @implementation NSObject (ATOther)
 
 /// should be obfuscated
-- (void)obfuscate_public_method
+- (void)publicMethod
 {
     /// should be obfuscated
-    [self obfuscate_private_method];
+    [self privateMethod];
 }
 
 /// should be obfuscated
-- (void)obfuscate_private_method
+- (void)privateMethod
 {
     ;;
 }

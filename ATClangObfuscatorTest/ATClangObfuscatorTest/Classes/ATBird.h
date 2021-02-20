@@ -18,13 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL full;
 
 /// should be obfuscated
-- (void)obfuscate_fly_ex;
+- (void)flyEx;
 
 /// should be obfuscated
-- (int)obfuscate_count;
+- (int)count;
 
 /// should be obfuscated
-- (void)setObfuscate_count:(int)count;
+- (void)setCount:(int)count;
 
 @end
 

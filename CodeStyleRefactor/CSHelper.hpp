@@ -28,7 +28,7 @@ public:
     static std::string classCategoryName(ObjCCategoryDecl *decl);
     static std::string classCategoryName(ObjCCategoryImplDecl *decl);
     
-    void setSelectorPrefix(const std::string& prefix, std::set<std::string> *oriPrefixSet);
+    void setSelectorPrefix(const std::string& prefix);
     void setSourceManager(SourceManager *sm);
     void setReplacementsMap(std::map<std::string, Replacements> *rpsMap);
     void setCache(CSCache *cache);
@@ -50,7 +50,6 @@ public:
 private:
     std::string mGetterPrefix;
     std::string mSetterPrefix;
-    std::set<std::string> *mOriPrefixSet;
     
     CSCache *mCache;
     SourceManager *mSourceManager;

@@ -1,10 +1,6 @@
 # obfuscate selector prefix
 prefix:
-obfuscate
-
-#origin selector prefix
-oriPrefix:
-# abc
+obfuscate_
 
 # class name or protocol name, every class/protocol will be obfuscated when white list is empty
 whiteList:

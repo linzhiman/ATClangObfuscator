@@ -21,10 +21,10 @@ AT_DECLARE_SINGLETON;
 AT_DECLARE_CREATE_OBJ;
 
 /// should be obfuscated
-- (void)obfuscate_test;
+- (void)test;
 
 /// should be obfuscated
-- (void)setObfuscate_monster:(ATMonster *)monster;
+- (void)setMonster:(ATMonster *)monster;
 
 @end
 

@@ -14,10 +14,10 @@
 /// sharedObject should be obfuscated
 
 #define AT_DECLARE_SINGLETON \
-+ (instancetype)obfuscate_shared_object;
++ (instancetype)sharedObject;
 
 #define AT_IMPLEMENT_SINGLETON(atType) \
-+ (instancetype)obfuscate_shared_object { \
++ (instancetype)sharedObject { \
     static dispatch_once_t __once; \
     static atType *__instance = nil; \
     dispatch_once(&__once, ^{ \

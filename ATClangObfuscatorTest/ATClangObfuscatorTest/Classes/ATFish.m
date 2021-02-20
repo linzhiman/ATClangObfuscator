@@ -11,26 +11,26 @@
 @implementation ATFish
 
 /// should be obfuscated
-- (BOOL)obfuscate_sleep_at_night
+- (BOOL)sleepAtNight
 {
     return YES;
 }
 
 /// should be obfuscated
-- (void)obfuscate_swim
+- (void)swim
 {
     /// should be obfuscated
-    [self obfuscate_swim_ex];
+    [self swimEx];
 }
 
 /// should be obfuscated
-- (void)obfuscate_swim_ex
+- (void)swimEx
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-+ (ATFish *)obfuscate_create_instance
++ (ATFish *)createInstance
 {
     return [[ATFish alloc] init];
 }

@@ -11,32 +11,32 @@
 @implementation ATBird
 
 /// should be obfuscated
-- (BOOL)obfuscate_sleep_at_night
+- (BOOL)sleepAtNight
 {
     return YES;
 }
 
 /// should be obfuscated
-- (void)obfuscate_fly
+- (void)fly
 {
     /// should be obfuscated
-    [self obfuscate_fly_ex];
+    [self flyEx];
 }
 
 /// should be obfuscated
-- (void)obfuscate_fly_ex
+- (void)flyEx
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-- (int)obfuscate_count
+- (int)count
 {
     return 0;
 }
 
 /// should be obfuscated
-- (void)setObfuscate_count:(int)count
+- (void)setCount:(int)count
 {
     NSLog(@"do nothing");
 }

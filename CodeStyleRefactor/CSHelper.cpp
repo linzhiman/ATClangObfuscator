@@ -10,16 +10,6 @@
 
 #include "clang/AST/ParentMapContext.h"
 
-bool CheckIsString(const char * p, const std::string &key)
-{
-    size_t i = 0, len = key.size();
-    while ( *p != '\0' && i < len && (*p == key[i]) ) {
-        p++;
-        i++;
-    }
-    return i == len;
-}
-
 std::string CSHelper::classCategoryName(const std::string &className, const std::string &categoryName)
 {
     return className + "(" + categoryName + ")";
@@ -39,15 +29,13 @@ std::string CSHelper::classCategoryName(ObjCCategoryImplDecl *decl)
     return CSHelper::classCategoryName(className, categoryName);
 }
 
-void CSHelper::setSelectorPrefix(const std::string& prefix, std::set<std::string> *oriPrefixSet)
+void CSHelper::setSelectorPrefix(const std::string& prefix)
 {
     mGetterPrefix = prefix;
     
     std::string tmp = "set" + prefix;
     tmp[3] = toUpper(tmp[3]);
     mSetterPrefix = tmp;
-    
-    mOriPrefixSet = oriPrefixSet;
 }
 
 void CSHelper::setSourceManager(SourceManager *sm)
@@ -67,50 +55,13 @@ void CSHelper::setCache(CSCache *cache)
 
 std::string CSHelper::newSelectorName(const std::string& selector)
 {
-    std::string oldName = selector;
-    std::string newName = mGetterPrefix;
     if (selector.find("set") == 0) {
         std::string tmp = selector.substr(3);
         tmp[0] = tolower(tmp[0]);
-        oldName = tmp;
-        newName = mSetterPrefix;
+        return mSetterPrefix + tmp;
     }
     
-    newName += "_";
-    
-    for (std::set<std::string>::iterator i = mOriPrefixSet->begin(); i != mOriPrefixSet->end(); ++i) {
-        std::string prefix = *i + "_";
-        if (oldName.find(prefix) == 0) {
-            oldName = oldName.substr(prefix.length());
-            break;
-        }
-    }
-    
-    for (size_t i = 0;  i < oldName.size(); i++) {
-        if (oldName[i] == ':') {
-            newName += oldName.substr(i);
-            break;
-        }
-        if (isUppercase(oldName[i])) {
-            if (CheckIsString(&oldName[i], "URL")) {
-                newName += "_url";
-                i += 2;
-                continue;
-            } else if (CheckIsString(&oldName[i], "GET") ) {
-                newName += "_get";
-                i += 2 ;
-                continue;
-                
-            } else if (CheckIsString(&oldName[i], "JSON") ) {
-                newName += "_json";
-                i += 3;
-                continue;
-            }
-            newName += "_";
-        }
-        newName += tolower(oldName[i]);
-    }
-    return newName;
+    return mGetterPrefix + selector;
 }
 
 SourceLocation CSHelper::getLoc(DeclContext *declContext)

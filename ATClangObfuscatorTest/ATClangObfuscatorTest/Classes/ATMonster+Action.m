@@ -11,7 +11,7 @@
 @protocol IATActionBase <NSObject>
 
 /// should be obfuscated
-- (NSString *)obfuscate_base;
+- (NSString *)base;
 
 @end
 
@@ -22,7 +22,7 @@
 @implementation ATMonster (ActionPrivate)
 
 /// should be obfuscated
-- (NSString *)obfuscate_base;
+- (NSString *)base;
 {
     return nil;
 }
@@ -32,13 +32,13 @@
 @implementation ATMonster (Action)
 
 /// should be obfuscated
-- (void)obfuscate_do_action
+- (void)doAction
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-+ (void)obfuscate_do_class_action
++ (void)doClassAction
 {
     NSLog(@"do nothing");
 }
@@ -72,7 +72,7 @@
 }
 
 /// should be obfuscated
-- (void)obfuscate_do_action_ex
+- (void)doActionEx
 {
     NSLog(@"do nothing");
 }

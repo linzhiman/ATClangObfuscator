@@ -19,7 +19,7 @@ static int kATAnimalLiveCount = 0;
 @property (nonatomic, assign) int privatePC;
 
 /// should be obfuscated
-- (void)obfuscate_private_method;
+- (void)privateMethod;
 
 @end
 
@@ -85,20 +85,20 @@ static int kATAnimalLiveCount = 0;
 }
 
 /// should be obfuscated
-- (void)obfuscate_sleep
+- (void)sleep
 {
     /// should be obfuscated
-    [self obfuscate_sleep_now:YES duration:100];
+    [self sleepNow:YES duration:100];
 }
 
 /// should be obfuscated
-- (void)obfuscate_sleep_now:(BOOL)now duration:(NSInteger)duration
+- (void)sleepNow:(BOOL)now duration:(NSInteger)duration
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-- (BOOL)obfuscate_sleep_at_night
+- (BOOL)sleepAtNight
 {
     return YES;
 }
@@ -116,19 +116,19 @@ static int kATAnimalLiveCount = 0;
 }
 
 /// should be obfuscated
-- (void)obfuscate_private_method
+- (void)privateMethod
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-- (void)obfuscate_private_method_ex
+- (void)privateMethodEx
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-+ (BOOL)obfuscate_is_any_instance_live
++ (BOOL)isAnyInstanceLive
 {
     return kATAnimalLiveCount > 0;
 }

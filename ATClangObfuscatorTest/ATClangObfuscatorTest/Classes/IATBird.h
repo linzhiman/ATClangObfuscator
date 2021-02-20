@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol IATBird <NSObject>
 
 /// should be obfuscated
-- (void)obfuscate_fly;
+- (void)fly;
 
 @end
 
