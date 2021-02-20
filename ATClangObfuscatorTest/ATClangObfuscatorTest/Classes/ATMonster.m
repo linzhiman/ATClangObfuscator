@@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 @implementation ATMonster
 
 /// should be obfuscated
-- (void)swim
+- (void)obfuscate_swim
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-- (void)fly
+- (void)obfuscate_fly
 {
     NSLog(@"do nothing");
 }
 
 /// should be obfuscated
-- (void)scare
+- (void)obfuscate_scare
 {
     /// should be obfuscated
-    [self privateScare];
+    [self obfuscate_private_scare];
 }
 
 /// should be obfuscated
-- (void)privateScare
+- (void)obfuscate_private_scare
 {
     /// should be obfuscated
-    [self privateScareEx];
+    [self obfuscate_private_scare_ex];
 }
 
 /// should be obfuscated
-- (void)privateScareEx
+- (void)obfuscate_private_scare_ex
 {
     NSLog(@"do nothing");
 }
@@ -118,7 +118,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 - (void)run
 {
     /// should be obfuscated
-    [self privateScareEx];
+    [self obfuscate_private_scare_ex];
 }
 
 @end
@@ -127,7 +127,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 @implementation ATMonsterEx
 
 /// should be obfuscated
-- (void)scare
+- (void)obfuscate_scare
 {
     NSLog(@"do nothing");
 }
@@ -145,7 +145,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 }
 
 /// should be obfuscated
-- (void)scareEx
+- (void)obfuscate_scare_ex
 {
     NSLog(@"do nothing");
 }
@@ -156,7 +156,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 @implementation ATMonsterEx (OnlyImp)
 
 /// should be obfuscated
-- (void)onlyImp
+- (void)obfuscate_only_imp
 {
     NSLog(@"do nothing");
 }
@@ -176,20 +176,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
 AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
 
 /// should be obfuscated
-- (ATMonster *)create
+- (ATMonster *)obfuscate_create
 {
     AT_POST_NOTIFY(ATMonsterCreate);
     return [ATMonster new];
 }
 
 /// should be obfuscated
-- (ATMonsterEx *)createEx
+- (ATMonsterEx *)obfuscate_create_ex
 {
     /// new should NOT be obfuscated
     ATMonsterEx *ex = [ATMonsterEx new];
     
     /// should be obfuscated
-    [ex onlyImp];
+    [ex obfuscate_only_imp];
     
     return ex;
 }

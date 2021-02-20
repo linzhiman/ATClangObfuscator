@@ -16,10 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL alive;
 
 /// should be obfuscated
-- (void)doAction;
+- (void)obfuscate_do_action;
 
 /// should be obfuscated
-+ (void)doClassAction;
++ (void)obfuscate_do_class_action;
 
 @end
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)dead;
 
 /// should be obfuscated
-- (void)doActionEx;
+- (void)obfuscate_do_action_ex;
 
 @end
 

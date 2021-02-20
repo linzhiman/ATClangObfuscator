@@ -429,14 +429,14 @@ int main(int argc, const char **argv)
     if (sys::fs::exists(configFilePath)) {
         gCache.loadConfig(configFilePath);
     }
-    
+
     analizeFiles = gCache.filterNotUserSourceCode(op.getCompilations().getAllFiles());
     
     RefactoringTool tool(op.getCompilations(), analizeFiles);
     
     std::unique_ptr<FrontendActionFactory> factory(new CodeStyleActionFactory(tool));
     
-    gHelper.setSelectorPrefix(gCache.getSelectorPrefix());
+    gHelper.setSelectorPrefix(gCache.getSelectorPrefix(), &gCache.getOriSelectorPrefix());
     gHelper.setReplacementsMap(&tool.getReplacements());
     gHelper.setCache(&gCache);
     

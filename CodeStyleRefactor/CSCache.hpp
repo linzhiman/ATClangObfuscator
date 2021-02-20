@@ -19,6 +19,7 @@ class CSCache
 {
 public:
     std::string getSelectorPrefix();
+    std::set<std::string> &getOriSelectorPrefix();
     void loadConfig(const std::string &filePath);
     
     bool containClsName(const std::string& clsName);
@@ -70,6 +71,7 @@ private:
     std::vector<std::string> weakIgnoreFolderVector;
     
     std::string selectorPrefix;
+    std::set<std::string> oriSelectorPrefixSet;
 };
 
 #endif /* CSCache_hpp */

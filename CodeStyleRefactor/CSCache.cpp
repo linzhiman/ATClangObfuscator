@@ -27,12 +27,18 @@ std::string CSCache::getSelectorPrefix()
     return "at_";
 }
 
+std::set<std::string> &CSCache::getOriSelectorPrefix()
+{
+    return oriSelectorPrefixSet;
+}
+
 void CSCache::loadConfig(const std::string &filePath)
 {
     std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
     
     std::string tmp;
     bool prefix = false;
+    bool oriPrefix = false;
     bool whiteList = false;
     bool blackList = false;
     bool strongIgnoreFolder = false;
@@ -48,6 +54,15 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         if (tmp == "prefix:") {
             prefix = true;
+            oriPrefix = false;
+            whiteList = false;
+            blackList = false;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = false;
+        }
+        else if (tmp == "oriPrefix:") {
+            prefix = false;
+            oriPrefix = true;
             whiteList = false;
             blackList = false;
             strongIgnoreFolder = false;
@@ -55,6 +70,7 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         else if (tmp == "whiteList:") {
             prefix = false;
+            oriPrefix = false;
             whiteList = true;
             blackList = false;
             strongIgnoreFolder = false;
@@ -62,6 +78,7 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         else if (tmp == "blackList:") {
             prefix = false;
+            oriPrefix = false;
             whiteList = false;
             blackList = true;
             strongIgnoreFolder = false;
@@ -69,6 +86,7 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         else if (tmp == "strongIgnoreFolder:") {
             prefix = false;
+            oriPrefix = false;
             whiteList = false;
             blackList = false;
             strongIgnoreFolder = true;
@@ -76,6 +94,7 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         else if (tmp == "weakIgnoreFolder:") {
             prefix = false;
+            oriPrefix = false;
             whiteList = false;
             blackList = false;
             strongIgnoreFolder = false;
@@ -84,6 +103,9 @@ void CSCache::loadConfig(const std::string &filePath)
         else {
             if (prefix) {
                 selectorPrefix = tmp;
+            }
+            else if (oriPrefix) {
+                oriSelectorPrefixSet.insert(tmp);
             }
             else if (whiteList) {
                 whiteListSet.insert(tmp);

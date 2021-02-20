@@ -34,16 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setArea:(NSString *)area;
 
 /// should be obfuscated
-- (void)sleep;
+- (void)obfuscate_sleep;
 
 /// should be obfuscated
-- (void)sleepNow:(BOOL)now duration:(NSInteger)duration;
+- (void)obfuscate_sleep_now:(BOOL)now duration:(NSInteger)duration;
 
 /// should be obfuscated
-- (BOOL)sleepAtNight;
+- (BOOL)obfuscate_sleep_at_night;
 
 /// should be obfuscated
-+ (BOOL)isAnyInstanceLive;
++ (BOOL)obfuscate_is_any_instance_live;
 
 @end
 

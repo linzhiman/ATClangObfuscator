@@ -15,10 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ATFish : ATAnimal<IATFish>
 
 /// should be obfuscated
-- (void)swimEx;
+- (void)obfuscate_swim_ex;
 
 /// should be obfuscated
-+ (ATFish *)createInstance;
++ (ATFish *)obfuscate_create_instance;
 
 @end
 

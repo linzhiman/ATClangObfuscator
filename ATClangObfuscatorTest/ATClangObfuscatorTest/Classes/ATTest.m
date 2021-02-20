@@ -28,22 +28,22 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
 }
 
 /// should be obfuscated
-- (void)test
+- (void)obfuscate_test
 {
     /// should be obfuscated
-    ATFish *fish = [ATFish createInstance];
+    ATFish *fish = [ATFish obfuscate_create_instance];
     
     /// should be obfuscated
-    [fish swim];
+    [fish obfuscate_swim];
     
     /// should be obfuscated
-    [fish swimEx];
+    [fish obfuscate_swim_ex];
     
     /// new should NOT be obfuscated
     id<IATBird> iBird = [ATBird new];
     
     /// should be obfuscated
-    [iBird fly];
+    [iBird obfuscate_fly];
     
     /// new should NOT be obfuscated
     ATBird *bird = [ATBird new];
@@ -61,31 +61,31 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
     bird.full = full;
     
     /// not property should be obfuscated
-    int count = bird.count;
+    int count = bird.obfuscate_count;
     
     /// not property should be obfuscated
-    bird.count = count;
+    bird.obfuscate_count = count;
 }
 
 /// should be obfuscated
-- (void)setMonster:(ATMonster *)monster
+- (void)setObfuscate_monster:(ATMonster *)monster
 {
     /// should be obfuscated
-    [monster sleep];
+    [monster obfuscate_sleep];
     
     /// should be obfuscated
-    [monster doAction];
+    [monster obfuscate_do_action];
     
     /// run should NOT be obfuscated
     [monster performSelector:@selector(run)];
     
     /// should be obfuscated
-    [ATMonster doClassAction];
+    [ATMonster obfuscate_do_class_action];
     
     id tmp = monster;
     
     /// should be obfuscated
-    [tmp sleep];
+    [tmp obfuscate_sleep];
     
     /// run should NOT be obfuscated
     [tmp run];
@@ -94,13 +94,13 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
     id<IATMonster> monsterEx = [ATMonsterEx new];
     
     /// should be obfuscated
-    [monsterEx scare];
+    [monsterEx obfuscate_scare];
     
     /// should be obfuscated
-    ATTest *newObj = [ATTest createObj];
+    ATTest *newObj = [ATTest obfuscate_create_obj];
     
     /// should be obfuscated
-    [newObj test];
+    [newObj obfuscate_test];
     
     /// onATMonsterCreate is written in ScratchSpace should NOT be obfuscated
     [self onATMonsterCreate:nil];
@@ -109,7 +109,7 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
 AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
 {
     /// should be obfuscated
-    [ATMonsterCenterObj create];
+    [ATMonsterCenterObj obfuscate_create];
     
     ATMonsterCenterObjCreate;
     

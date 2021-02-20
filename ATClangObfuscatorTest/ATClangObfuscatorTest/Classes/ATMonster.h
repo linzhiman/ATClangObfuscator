@@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 AT_EXTERN_NOTIFI(ATMonsterCreate);
 
 /// should be obfuscated
-#define ATMonsterCenterObj [ATMonsterCenter sharedObject]
+#define ATMonsterCenterObj [ATMonsterCenter obfuscate_shared_object]
 
 /// should be obfuscated
-#define ATMonsterCenterObjCreate [ATMonsterCenterObj create];
+#define ATMonsterCenterObjCreate [ATMonsterCenterObj obfuscate_create];
 
 @class ATMonster;
 
@@ -48,7 +48,7 @@ AT_EXTERN_NOTIFI(ATMonsterCreate);
 AT_DECLARE_SINGLETON;
 
 /// should be obfuscated
-- (ATMonster *)create;
+- (ATMonster *)obfuscate_create;
 
 /// getter/setter should NOT be obfuscated
 - (UIView *)currentMonsterView;

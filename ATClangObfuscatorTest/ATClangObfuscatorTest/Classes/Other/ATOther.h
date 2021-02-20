@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSObject (ATOther)
 
 /// should be obfuscated
-- (void)publicMethod;
+- (void)obfuscate_public_method;
 
 @end
 
