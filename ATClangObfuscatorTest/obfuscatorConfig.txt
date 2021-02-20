@@ -11,10 +11,11 @@ whiteList:
 # ATAnimal
 # IATMonster
 
-# class name or protocol name
+# class name or protocol name，category name
 blackList:
 # ATAnimal
 # IATMonster
+# ATMonster(Action)
 
 # every file will not be obfuscated
 strongIgnoreFolder:

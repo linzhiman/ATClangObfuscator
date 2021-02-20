@@ -173,12 +173,17 @@ bool CSCache::isInWhiteList(const std::string &clsName) const
 
 bool CSCache::isInBlackList(const std::string &clsName) const
 {
+    if (blackListSet.find(clsName) != blackListSet.end()) {
+        return true;
+    }
+    
     std::string clsNameEx = clsName;
     int nPos = clsNameEx.find("(");
     if (nPos != -1) {
         clsNameEx = clsNameEx.substr(0, nPos);
+        return blackListSet.find(clsNameEx) != blackListSet.end();
     }
-    return blackListSet.find(clsNameEx) != blackListSet.end();
+    return false;
 }
 
 bool CSCache::ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const
