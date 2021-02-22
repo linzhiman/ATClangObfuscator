@@ -470,6 +470,9 @@ void CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl)
             addIgnoreProtocolSelector(decl, protocol);
         }
     }
+    else {
+        addIgnoreProtocolSelector(decl, cast<ObjCProtocolDecl>(parent));
+    }
 }
 
 void CSHelper::addClassProperty(ObjCPropertyDecl *decl)

@@ -318,7 +318,7 @@ index 11f3fa9..ab84e0b 100644
  /// getter/setter should NOT be obfuscated
  - (UIView *)currentMonsterView;
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
-index 48a2ae8..caef4d4 100644
+index 31e57e2..f8a025d 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 @@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
@@ -389,7 +389,7 @@ index 48a2ae8..caef4d4 100644
  {
      NSLog(@"do nothing");
  }
-@@ -156,7 +156,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -170,7 +170,7 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  @implementation ATMonsterEx (OnlyImp)
  
  /// should be obfuscated
@@ -398,7 +398,7 @@ index 48a2ae8..caef4d4 100644
  {
      NSLog(@"do nothing");
  }
-@@ -176,20 +176,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -190,20 +190,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
  
  /// should be obfuscated
@@ -420,8 +420,8 @@ index 48a2ae8..caef4d4 100644
 -    [ex onlyImp];
 +    [ex obfuscate_only_imp];
      
-     return ex;
- }
+     /// should NOT be obfuscated
+     [ex level];
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
 index 7942045..dab6fe0 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.h
@@ -580,7 +580,7 @@ index 3224c42..82d9b9e 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
-index 79c959f..8f6ddbc 100644
+index dc93605..26acb98 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 @@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
@@ -592,8 +592,8 @@ index 79c959f..8f6ddbc 100644
  
  /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
  - (void)amIBig;
-@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
- @protocol IATMonsterEx <IATMonster>
+@@ -32,13 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
+ @property (nonatomic, assign) BOOL hasEye;
  
  /// should be obfuscated
 -- (void)scare;
