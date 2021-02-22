@@ -25,6 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol IATMonsterEx <IATMonster>
 
+/// should NOT be obfuscated
+@property (nonatomic, assign, readonly) BOOL level;
+
+/// should NOT be obfuscated
+@property (nonatomic, assign) BOOL hasEye;
+
 /// should be obfuscated
 - (void)scare;
 

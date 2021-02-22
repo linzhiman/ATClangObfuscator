@@ -150,6 +150,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
     NSLog(@"do nothing");
 }
 
+@synthesize level;
+
+/// should NOT be obfuscated
+- (BOOL)hasEye
+{
+    return YES;
+}
+
+/// should NOT be obfuscated
+- (void)setHasEye:(BOOL)hasEye
+{
+    ;
+}
+
 @end
 
 
@@ -190,6 +204,18 @@ AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
     
     /// should be obfuscated
     [ex onlyImp];
+    
+    /// should NOT be obfuscated
+    [ex level];
+    
+    /// should NOT be obfuscated
+    [ex setHasEye:YES];
+    
+    /// should NOT be obfuscated
+    [ex hasEye];
+    
+    /// should NOT be obfuscated
+    ex.hasEye = NO;
     
     return ex;
 }
