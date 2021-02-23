@@ -7,6 +7,7 @@
 //
 
 #import "ATMonster+Action.h"
+#import "ATMonster+Private.h"
 
 @protocol IATActionBase <NSObject>
 

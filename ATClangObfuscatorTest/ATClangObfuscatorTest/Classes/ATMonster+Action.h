@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)doActionEx;
 
 /// property should NOT be obfuscated
-- (NSString *)name;
+- (NSString *)otherName;
 
 @end
 

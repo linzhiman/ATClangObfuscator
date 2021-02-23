@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ATMonster ()
 
 /// property should NOT be obfuscated
-@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *otherName;
 
 @end
 
