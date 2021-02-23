@@ -31,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// should be obfuscated
 - (void)doActionEx;
 
+/// property should NOT be obfuscated
+- (NSString *)name;
+
 @end
 
 @interface ATMonster (ActionEx)<IATActionEx>

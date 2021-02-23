@@ -51,6 +51,7 @@
 		DC7B0C772512FB1800534550 /* ATMonster+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATMonster+Action.h"; sourceTree = "<group>"; };
 		DC7B0C782512FB1800534550 /* ATMonster+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATMonster+Action.m"; sourceTree = "<group>"; };
 		DC7B0CAB251446DC00534550 /* ATMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATMacro.h; sourceTree = "<group>"; };
+		DC8931B325E4AE97009F568F /* ATMonster+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATMonster+Private.h"; sourceTree = "<group>"; };
 		DCBC1BA125C41ADC000297C6 /* ATDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATDefine.h; sourceTree = "<group>"; };
 		DCC35A0C25CF980D006BDF7F /* ATOther.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATOther.h; sourceTree = "<group>"; };
 		DCC35A0D25CF980D006BDF7F /* ATOther.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATOther.m; sourceTree = "<group>"; };
@@ -124,6 +125,7 @@
 				DC7B0C712512F6A200534550 /* ATMonster.m */,
 				DC7B0C772512FB1800534550 /* ATMonster+Action.h */,
 				DC7B0C782512FB1800534550 /* ATMonster+Action.m */,
+				DC8931B325E4AE97009F568F /* ATMonster+Private.h */,
 				DC7B0C742512F87D00534550 /* ATTest.h */,
 				DC7B0C752512F87D00534550 /* ATTest.m */,
 			);
