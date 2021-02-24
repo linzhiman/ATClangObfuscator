@@ -43,9 +43,9 @@ public:
     bool isNeedObfuscate(ObjCMessageExpr *expr);
     void obfuscate(ObjCMessageExpr *expr, ASTContext *context);
     
-    void addIgnoreProtocolSelector(ObjCMethodDecl *decl);
-    
     void addClassProperty(ObjCPropertyDecl *decl);
+    void addClassProtocol(ObjCContainerDecl *decl);
+    void addProtocolSelector(ObjCProtocolDecl *decl);
     
 private:
     std::string mGetterPrefix;
@@ -70,8 +70,6 @@ private:
     std::vector<ObjCProtocolDecl *> getDefineProtocols(ObjCMethodDecl *decl);
     std::vector<ObjCMethodDecl *> getDefineMethods(ObjCMethodDecl *decl);
     bool isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage);
-    
-    bool addIgnoreProtocolSelector(ObjCMethodDecl *decl, ObjCProtocolDecl *protocol);
     
     void addReplacement(const std::string &filePath, const Replacement &replace);
     void addReplacement(Selector sel, bool isImplicitProperty, SourceLocation loc);

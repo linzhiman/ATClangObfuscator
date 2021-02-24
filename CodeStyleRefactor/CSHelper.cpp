@@ -459,54 +459,79 @@ void CSHelper::obfuscate(ObjCMessageExpr *expr, ASTContext *context)
     }
 }
 
-void CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl)
-{
-    DeclContext *parent = decl->getParent();
-    Decl::Kind parentKind = parent->getDeclKind();
-    
-    if (parentKind != Decl::ObjCProtocol) {
-        std::vector<ObjCProtocolDecl *> protocols = getDefineProtocols(decl);
-        for (ObjCProtocolDecl *protocol : protocols) {
-            addIgnoreProtocolSelector(decl, protocol);
-        }
-    }
-    else {
-        addIgnoreProtocolSelector(decl, cast<ObjCProtocolDecl>(parent));
-    }
-}
-
 void CSHelper::addClassProperty(ObjCPropertyDecl *decl)
 {
     ObjCMethodDecl *getterDecl = decl->getGetterMethodDecl();
     ObjCMethodDecl *setterDecl = decl->getSetterMethodDecl();
     
-    ObjCInterfaceDecl *interfaceDecl = NULL;
+    std::vector<ObjCMethodDecl *> decls;
     if (getterDecl) {
-        interfaceDecl = getterDecl->getClassInterface();
-        if (interfaceDecl && mCache->isUserSourceCode(getFilename(interfaceDecl), false)) {
-            mCache->addClsGetterOrSetter(interfaceDecl->getNameAsString(), getterDecl->getSelector().getAsString());
-        }
+        decls.push_back(getterDecl);
     }
     if (setterDecl) {
-        interfaceDecl = setterDecl->getClassInterface();
-        if (interfaceDecl && mCache->isUserSourceCode(getFilename(interfaceDecl), false)) {
-            mCache->addClsGetterOrSetter(interfaceDecl->getNameAsString(), setterDecl->getSelector().getAsString());
+        decls.push_back(setterDecl);
+    }
+    
+    for (ObjCMethodDecl *methodDecl : decls) {
+        if (!mCache->isUserSourceCode(getFilename(methodDecl), false)) {
+            continue;
+        }
+        
+        ObjCInterfaceDecl *interfaceDecl = methodDecl->getClassInterface();
+        if (interfaceDecl) {
+            mCache->addClsGetterOrSetter(interfaceDecl->getNameAsString(), methodDecl->getSelector().getAsString());
+        }
+        else {
+            DeclContext *parent = methodDecl->getParent();
+            Decl::Kind parentKind = parent->getDeclKind();
+            if (parentKind == Decl::ObjCProtocol) {
+                ObjCProtocolDecl *protocolDecl = cast<ObjCProtocolDecl>(parent);
+                if (protocolDecl) {
+                    mCache->addIgnoreProtocolSelector(protocolDecl->getNameAsString(), methodDecl->getSelector().getAsString());
+                }
+            }
         }
     }
 }
 
-bool CSHelper::addIgnoreProtocolSelector(ObjCMethodDecl *decl, ObjCProtocolDecl *protocol)
+void CSHelper::addClassProtocol(ObjCContainerDecl *decl)
 {
-    if (protocol->lookupMethod(decl->getSelector(), decl->isInstanceMethod())) {
-        std::string filePath = getFilename(protocol);
-        if (mCache->isUserSourceCode(filePath, false)) {
-            if (decl->getCanonicalDecl()->isPropertyAccessor()) {
-                mCache->addIgnoreProtocolSelector(protocol->getNameAsString(), decl->getSelector().getAsString());
+    if (!mCache->isUserSourceCode(getFilename(decl), false)) {
+        return;
+    }
+
+    Decl::Kind kind = decl->getDeclKind();
+    if (kind == Decl::ObjCInterface) {
+        auto *tmp = cast<ObjCInterfaceDecl>(decl);
+        for (ObjCProtocolDecl *protocol : tmp->all_referenced_protocols()) {
+            for (ObjCProtocolDecl *protocol : getAllProtocols(protocol)) {
+                if (mCache->isUserSourceCode(getFilename(protocol), false)) {
+                    mCache->addClsProtocol(tmp->getNameAsString(), protocol->getNameAsString());
+                }
             }
         }
-        return true;
     }
-    return false;
+    else if (kind == Decl::ObjCCategory) {
+        auto *tmp = cast<ObjCCategoryDecl>(decl);
+        for (ObjCProtocolDecl *protocol : tmp->getReferencedProtocols()) {
+            for (ObjCProtocolDecl *protocol : getAllProtocols(protocol)) {
+                if (mCache->isUserSourceCode(getFilename(protocol), false)) {
+                    mCache->addClsProtocol(tmp->getClassInterface()->getNameAsString(), protocol->getNameAsString());
+                }
+            }
+        }
+    }
+}
+
+void CSHelper::addProtocolSelector(ObjCProtocolDecl *decl)
+{
+    if (!mCache->isUserSourceCode(getFilename(decl), false)) {
+        return;
+    }
+    
+    for (ObjCMethodDecl *method : decl->methods()) {
+        mCache->addProtocolSelector(decl->getNameAsString(), method->getSelector().getAsString());
+    }
 }
 
 void CSHelper::addReplacement(const std::string &filePath, const Replacement &replace)

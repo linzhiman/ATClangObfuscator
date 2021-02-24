@@ -301,13 +301,6 @@ class CodeStyleSelectorVisitor : public RecursiveASTVisitor<CodeStyleSelectorVis
 public:
     bool shouldVisitImplicitCode() const { return true; }
     
-    bool TraverseObjCMethodDecl(ObjCMethodDecl *decl)
-    {
-        gHelper.addIgnoreProtocolSelector(decl);
-        
-        return RecursiveASTVisitor<CodeStyleSelectorVisitor>::TraverseObjCMethodDecl(decl);
-    }
-    
     bool TraverseObjCPropertyDecl(ObjCPropertyDecl *decl)
     {
 //        llvm::outs() << "TraverseObjCPropertyDecl:" << decl->getNameAsString() << "\n";
@@ -315,6 +308,35 @@ public:
         gHelper.addClassProperty(decl);
         
         return RecursiveASTVisitor<CodeStyleSelectorVisitor>::TraverseObjCPropertyDecl(decl);
+    }
+    
+    bool VisitObjCProtocolDecl(ObjCProtocolDecl *decl)
+    {
+        if (!decl->hasDefinition() || decl->getDefinition() != decl) {
+            return true;
+        }
+        
+        gHelper.addProtocolSelector(decl);
+        
+        return true;
+    }
+    
+    bool VisitObjCInterfaceDecl(ObjCInterfaceDecl *decl)
+    {
+        if (!decl->hasDefinition() || decl->getDefinition() != decl) {
+            return true;
+        }
+        
+        gHelper.addClassProtocol(decl);
+        
+        return true;
+    }
+    
+    bool VisitObjCCategoryDecl(ObjCCategoryDecl *decl)
+    {
+        gHelper.addClassProtocol(decl);
+        
+        return true;
     }
     
     bool VisitObjCSelectorExpr(ObjCSelectorExpr *expr)
@@ -449,6 +471,7 @@ int main(int argc, const char **argv)
         if (int Result = tool.run(factory.get())) {
             return Result;
         }
+        gCache.genIgnoreProtocolSelector();
         gCache.saveCache(selectorFilePath);
     }
     

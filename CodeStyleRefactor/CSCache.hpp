@@ -34,9 +34,14 @@ public:
     
     bool ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const;
     void addIgnoreProtocolSelector(const std::string& protocol, const std::string& selector);
+    void genIgnoreProtocolSelector(void);
     
     bool isClsGetterOrSetter(const std::string& clsName, const std::string& selector) const;
     void addClsGetterOrSetter(const std::string& clsName, const std::string& selector);
+    
+    void addClsProtocol(const std::string& clsName, const std::string& protocol);
+    
+    void addProtocolSelector(const std::string& protocol, const std::string& selector);
     
     bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
@@ -48,16 +53,22 @@ public:
     std::vector<std::string> filterNotUserSourceCode(const std::vector<std::string> &allFiles);
     
 private:
-    //类名:方法列表
-    std::map<std::string, std::map<std::string, std::string>> mReplaceClsMethodMap;
+    //类名:待替换的方法列表
+    std::map<std::string, std::map<std::string, std::string>> mReplaceClsSelectorMap;
     
-    //协议名:方法列表
+    //协议名:不替换的方法列表（同名属性）
     std::map<std::string, std::set<std::string>> mIgnoreProtocolSelectorMap;
     
-    //类名:方法列表
-    std::map<std::string, std::set<std::string>> mClsGetterSetterMap;
+    //类名:属性方法列表，包括分类
+    std::map<std::string, std::set<std::string>> mClsPropertySelectorMap;
     
-    //selector列表
+    //类名:协议列表，包括分类
+    std::map<std::string, std::set<std::string>> mClsProtocolMap;
+    
+    //协议名:方法列表
+    std::map<std::string, std::set<std::string>> mProtocolSelectorMap;
+    
+    //不替换的selector列表（@selector）
     std::set<std::string> mIgnoreSelectorSet;
     
     //白名单
