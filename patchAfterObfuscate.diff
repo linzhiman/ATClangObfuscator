@@ -219,7 +219,7 @@ index 5a8ea5a..90eb837 100644
      static atType *__instance = nil; \
      dispatch_once(&__once, ^{ \
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
-index 8eff7cc..cb399c8 100644
+index e4d0538..0408fc9 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.h
 @@ -16,10 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
@@ -242,13 +242,13 @@ index 8eff7cc..cb399c8 100644
 -- (void)doActionEx;
 +- (void)obfuscate_do_action_ex;
  
- @end
- 
+ /// property should NOT be obfuscated
+ - (NSString *)otherName;
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
-index e938a48..abf7b99 100644
+index 9b97457..59fdac0 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
-@@ -11,7 +11,7 @@
+@@ -12,7 +12,7 @@
  @protocol IATActionBase <NSObject>
  
  /// should be obfuscated
@@ -257,7 +257,7 @@ index e938a48..abf7b99 100644
  
  @end
  
-@@ -22,7 +22,7 @@
+@@ -23,7 +23,7 @@
  @implementation ATMonster (ActionPrivate)
  
  /// should be obfuscated
@@ -266,7 +266,7 @@ index e938a48..abf7b99 100644
  {
      return nil;
  }
-@@ -32,13 +32,13 @@
+@@ -33,13 +33,13 @@
  @implementation ATMonster (Action)
  
  /// should be obfuscated
@@ -282,7 +282,7 @@ index e938a48..abf7b99 100644
  {
      NSLog(@"do nothing");
  }
-@@ -72,7 +72,7 @@
+@@ -73,7 +73,7 @@
  }
  
  /// should be obfuscated
