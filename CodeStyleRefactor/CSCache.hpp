@@ -49,29 +49,29 @@ public:
     
 private:
     //类名:方法列表
-    std::map<std::string, std::map<std::string, std::string>> clsMethodMap;
+    std::map<std::string, std::map<std::string, std::string>> mReplaceClsMethodMap;
     
     //协议名:方法列表
-    std::map<std::string, std::set<std::string>> protocolSelectorMap;
+    std::map<std::string, std::set<std::string>> mIgnoreProtocolSelectorMap;
     
     //类名:方法列表
-    std::map<std::string, std::set<std::string>> clsGetterSetterMap;
+    std::map<std::string, std::set<std::string>> mClsGetterSetterMap;
     
     //selector列表
-    std::set<std::string> selectorSet;
+    std::set<std::string> mIgnoreSelectorSet;
     
     //白名单
-    std::set<std::string> whiteListSet;
+    std::set<std::string> mWhiteListSet;
 
     //黑名单
-    std::set<std::string> blackListSet;
+    std::set<std::string> mBlackListSet;
     
-    std::vector<std::string> strongIgnoreFolderVector;
+    std::vector<std::string> mStrongIgnoreFolderVector;
     
-    std::vector<std::string> weakIgnoreFolderVector;
+    std::vector<std::string> mWeakIgnoreFolderVector;
     
-    std::string selectorPrefix;
-    std::set<std::string> oriSelectorPrefixSet;
+    std::string mSelectorPrefix;
+    std::set<std::string> mOriSelectorPrefixSet;
 };
 
 #endif /* CSCache_hpp */

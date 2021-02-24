@@ -21,15 +21,15 @@ void trim(string &s)
 
 std::string CSCache::getSelectorPrefix()
 {
-    if (selectorPrefix.length() > 0) {
-        return selectorPrefix;
+    if (mSelectorPrefix.length() > 0) {
+        return mSelectorPrefix;
     }
     return "at_";
 }
 
 std::set<std::string> &CSCache::getOriSelectorPrefix()
 {
-    return oriSelectorPrefixSet;
+    return mOriSelectorPrefixSet;
 }
 
 void CSCache::loadConfig(const std::string &filePath)
@@ -102,22 +102,22 @@ void CSCache::loadConfig(const std::string &filePath)
         }
         else {
             if (prefix) {
-                selectorPrefix = tmp;
+                mSelectorPrefix = tmp;
             }
             else if (oriPrefix) {
-                oriSelectorPrefixSet.insert(tmp);
+                mOriSelectorPrefixSet.insert(tmp);
             }
             else if (whiteList) {
-                whiteListSet.insert(tmp);
+                mWhiteListSet.insert(tmp);
             }
             else if (blackList) {
-                blackListSet.insert(tmp);
+                mBlackListSet.insert(tmp);
             }
             else if (strongIgnoreFolder) {
-                strongIgnoreFolderVector.push_back(tmp);
+                mStrongIgnoreFolderVector.push_back(tmp);
             }
             else if (weakIgnoreFolder) {
-                weakIgnoreFolderVector.push_back(tmp);
+                mWeakIgnoreFolderVector.push_back(tmp);
             }
         }
     }
@@ -125,18 +125,18 @@ void CSCache::loadConfig(const std::string &filePath)
 
 bool CSCache::containClsName(const std::string& clsName)
 {
-    return clsMethodMap.find(clsName) != clsMethodMap.end();
+    return mReplaceClsMethodMap.find(clsName) != mReplaceClsMethodMap.end();
 }
 
 void CSCache::addClsName(const std::string& clsName)
 {
-    clsMethodMap[clsName] = std::map<string, string>();
+    mReplaceClsMethodMap[clsName] = std::map<string, string>();
 }
 
 bool CSCache::addClsNameSelector(const std::string& clsName, const std::string& selector, const std::string& newSelector)
 {
-    auto clsIt = clsMethodMap.find(clsName);
-    if (clsIt != clsMethodMap.end()) {
+    auto clsIt = mReplaceClsMethodMap.find(clsName);
+    if (clsIt != mReplaceClsMethodMap.end()) {
         clsIt->second[selector] = newSelector;
         return true;
     }
@@ -145,17 +145,17 @@ bool CSCache::addClsNameSelector(const std::string& clsName, const std::string& 
 
 void CSCache::clearClsName()
 {
-    clsMethodMap.clear();
+    mReplaceClsMethodMap.clear();
 }
 
 void CSCache::addClsNameIntoWhiteList(const std::string& clsName)
 {
-    whiteListSet.insert(clsName);
+    mWhiteListSet.insert(clsName);
 }
 
 void CSCache::addClsNameIntoBlackList(const std::string& clsName)
 {
-    blackListSet.insert(clsName);
+    mBlackListSet.insert(clsName);
 }
 
 bool CSCache::isInWhiteList(const std::string &clsName) const
@@ -165,15 +165,15 @@ bool CSCache::isInWhiteList(const std::string &clsName) const
     if (nPos != -1) {
         clsNameEx = clsNameEx.substr(0, nPos);
     }
-    if (whiteListSet.size() > 0) {
-        return whiteListSet.find(clsNameEx) != whiteListSet.end();
+    if (mWhiteListSet.size() > 0) {
+        return mWhiteListSet.find(clsNameEx) != mWhiteListSet.end();
     }
     return true;
 }
 
 bool CSCache::isInBlackList(const std::string &clsName) const
 {
-    if (blackListSet.find(clsName) != blackListSet.end()) {
+    if (mBlackListSet.find(clsName) != mBlackListSet.end()) {
         return true;
     }
     
@@ -181,15 +181,15 @@ bool CSCache::isInBlackList(const std::string &clsName) const
     int nPos = clsNameEx.find("(");
     if (nPos != -1) {
         clsNameEx = clsNameEx.substr(0, nPos);
-        return blackListSet.find(clsNameEx) != blackListSet.end();
+        return mBlackListSet.find(clsNameEx) != mBlackListSet.end();
     }
     return false;
 }
 
 bool CSCache::ignoreProtocolSelector(const std::string& protocol, const std::string& selector) const
 {
-    auto it = protocolSelectorMap.find(protocol);
-    if (it != protocolSelectorMap.end()) {
+    auto it = mIgnoreProtocolSelectorMap.find(protocol);
+    if (it != mIgnoreProtocolSelectorMap.end()) {
         return it->second.find(selector) != it->second.end();
     }
     return false;
@@ -199,20 +199,20 @@ void CSCache::addIgnoreProtocolSelector(const std::string& protocol, const std::
 {
     llvm::outs() << "addIgnoreProtocolSelector\t" << protocol << "\t" << selector << "\n";
     
-    auto it = protocolSelectorMap.find(protocol);
-    if (it != protocolSelectorMap.end()) {
+    auto it = mIgnoreProtocolSelectorMap.find(protocol);
+    if (it != mIgnoreProtocolSelectorMap.end()) {
         it->second.insert(selector);
     }
     else {
-        protocolSelectorMap[protocol] = std::set<std::string>();
-        protocolSelectorMap[protocol].insert(selector);
+        mIgnoreProtocolSelectorMap[protocol] = std::set<std::string>();
+        mIgnoreProtocolSelectorMap[protocol].insert(selector);
     }
 }
 
 bool CSCache::isClsGetterOrSetter(const std::string& clsName, const std::string& selector) const
 {
-    auto it = clsGetterSetterMap.find(clsName);
-    if (it != clsGetterSetterMap.end()) {
+    auto it = mClsGetterSetterMap.find(clsName);
+    if (it != mClsGetterSetterMap.end()) {
         return it->second.find(selector) != it->second.end();
     }
     return false;
@@ -222,24 +222,24 @@ void CSCache::addClsGetterOrSetter(const std::string& clsName, const std::string
 {
     llvm::outs() << "addClsGetterOrSetter\t" << clsName << "\t" << selector << "\n";
     
-    auto it = clsGetterSetterMap.find(clsName);
-    if (it != clsGetterSetterMap.end()) {
+    auto it = mClsGetterSetterMap.find(clsName);
+    if (it != mClsGetterSetterMap.end()) {
         it->second.insert(selector);
     }
     else {
-        clsGetterSetterMap[clsName] = std::set<std::string>();
-        clsGetterSetterMap[clsName].insert(selector);
+        mClsGetterSetterMap[clsName] = std::set<std::string>();
+        mClsGetterSetterMap[clsName].insert(selector);
     }
 }
 
 bool CSCache::ignoreSelector(const std::string& selector) const
 {
-    return selectorSet.find(selector) != selectorSet.end();
+    return mIgnoreSelectorSet.find(selector) != mIgnoreSelectorSet.end();
 }
 
 void CSCache::addIgnoreSelector(const std::string& selector)
 {
-    pair<std::set<std::string>::iterator, bool> retpair = selectorSet.insert(selector);
+    pair<std::set<std::string>::iterator, bool> retpair = mIgnoreSelectorSet.insert(selector);
     if (retpair.second) {
         llvm::outs() << "addIgnoreSelector\t" << selector << "\n";
     }
@@ -259,17 +259,17 @@ void CSCache::loadCache(const std::string &filePath)
         ifs >> ignore >> count;
         while (count > 0) {
             ifs >> valueTemp;
-            selectorSet.insert(valueTemp);
+            mIgnoreSelectorSet.insert(valueTemp);
             count--;
         }
         ifs >> ignore >> count;
         while (count > 0) {
             ifs >> keyTemp;
-            protocolSelectorMap[keyTemp] = std::set<std::string>();
+            mIgnoreProtocolSelectorMap[keyTemp] = std::set<std::string>();
             ifs >> ignore >> count2;
             while (count2 > 0) {
                 ifs >> valueTemp;
-                protocolSelectorMap[keyTemp].insert(valueTemp);
+                mIgnoreProtocolSelectorMap[keyTemp].insert(valueTemp);
                 count2--;
             }
             count--;
@@ -277,11 +277,11 @@ void CSCache::loadCache(const std::string &filePath)
         ifs >> ignore >> count;
         while (count > 0) {
             ifs >> keyTemp;
-            clsGetterSetterMap[keyTemp] = std::set<std::string>();
+            mClsGetterSetterMap[keyTemp] = std::set<std::string>();
             ifs >> ignore >> count2;
             while (count2 > 0) {
                 ifs >> valueTemp;
-                clsGetterSetterMap[keyTemp].insert(valueTemp);
+                mClsGetterSetterMap[keyTemp].insert(valueTemp);
                 count2--;
             }
             count--;
@@ -293,17 +293,17 @@ void CSCache::saveCache(const std::string &filePath)
 {
     std::ofstream ofs = std::ofstream(filePath, std::ofstream::out);
     
-    ofs <<"ignoreSelectorCcount:" << "\t" << selectorSet.size() << "\n";
+    ofs <<"ignoreSelectorCcount:" << "\t" << mIgnoreSelectorSet.size() << "\n";
     
-    for (auto it = selectorSet.begin(); it != selectorSet.end(); ++it) {
+    for (auto it = mIgnoreSelectorSet.begin(); it != mIgnoreSelectorSet.end(); ++it) {
         ofs << *it << "\n";
     }
     
     ofs << "\n";
     
-    ofs <<"ignoreProtocolSelectorProtocolCount:" << "\t" << protocolSelectorMap.size() << "\n";
+    ofs <<"ignoreProtocolSelectorProtocolCount:" << "\t" << mIgnoreProtocolSelectorMap.size() << "\n";
     
-    for (auto it = protocolSelectorMap.begin(); it != protocolSelectorMap.end(); ++it) {
+    for (auto it = mIgnoreProtocolSelectorMap.begin(); it != mIgnoreProtocolSelectorMap.end(); ++it) {
         ofs << it->first << "\n";
         ofs <<"ignoreProtocolSelectorSelectorCount:" << "\t" << it->second.size() << "\n";
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
@@ -313,9 +313,9 @@ void CSCache::saveCache(const std::string &filePath)
     
     ofs << "\n";
     
-    ofs <<"clsGetterSetterMapClsCount:" << "\t" << clsGetterSetterMap.size() << "\n";
+    ofs <<"clsGetterSetterMapClsCount:" << "\t" << mClsGetterSetterMap.size() << "\n";
     
-    for (auto it = clsGetterSetterMap.begin(); it != clsGetterSetterMap.end(); ++it) {
+    for (auto it = mClsGetterSetterMap.begin(); it != mClsGetterSetterMap.end(); ++it) {
         ofs << it->first << "\n";
         ofs <<"clsGetterSetterMapGetterSetterCount:" << "\t" << it->second.size() << "\n";
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
@@ -342,7 +342,7 @@ bool CSCache::isUserSourceCode(const std::string filename, bool checkWeakIgnoreF
         return false;
     }
     
-    for (auto it = strongIgnoreFolderVector.begin(); it != strongIgnoreFolderVector.end(); ++it)
+    for (auto it = mStrongIgnoreFolderVector.begin(); it != mStrongIgnoreFolderVector.end(); ++it)
     {
         if (filename.find(*it) != std::string::npos) {
             return false;
@@ -353,7 +353,7 @@ bool CSCache::isUserSourceCode(const std::string filename, bool checkWeakIgnoreF
         return true;
     }
     
-    for (auto it = weakIgnoreFolderVector.begin(); it != weakIgnoreFolderVector.end(); ++it)
+    for (auto it = mWeakIgnoreFolderVector.begin(); it != mWeakIgnoreFolderVector.end(); ++it)
     {
         if (filename.find(*it) != std::string::npos) {
             return false;
