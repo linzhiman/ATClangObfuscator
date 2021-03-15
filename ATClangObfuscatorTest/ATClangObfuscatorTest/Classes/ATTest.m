@@ -96,6 +96,9 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
     /// should be obfuscated
     [monsterEx scare];
     
+    /// should NOT be obfuscated
+    monsterEx.smart = YES;
+    
     /// should be obfuscated
     ATTest *newObj = [ATTest createObj];
     

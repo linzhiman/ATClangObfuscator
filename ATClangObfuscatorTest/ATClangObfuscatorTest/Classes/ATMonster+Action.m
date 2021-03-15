@@ -56,6 +56,18 @@
     NSLog(@"do nothing");
 }
 
+/// should NOT be obfuscated
+- (BOOL)smart
+{
+    return YES;
+}
+
+/// should NOT be obfuscated
+- (void)setSmart:(BOOL)smart
+{
+    ;
+}
+
 @end
 
 @implementation ATMonster (ActionEx)

@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amISmall
 - (void)amISmall;
 
+@optional
+
+/// should NOT be obfuscated
+@property (nonatomic, assign) BOOL smart;
+
 @end
 
 @protocol IATMonsterEx <IATMonster>
