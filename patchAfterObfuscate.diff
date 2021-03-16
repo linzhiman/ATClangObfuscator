@@ -245,7 +245,7 @@ index e4d0538..0408fc9 100644
  /// property should NOT be obfuscated
  - (NSString *)otherName;
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
-index 9b97457..59fdac0 100644
+index 19a45f4..b0e4931 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster+Action.m
 @@ -12,7 +12,7 @@
@@ -282,7 +282,7 @@ index 9b97457..59fdac0 100644
  {
      NSLog(@"do nothing");
  }
-@@ -73,7 +73,7 @@
+@@ -85,7 +85,7 @@
  }
  
  /// should be obfuscated
@@ -318,7 +318,7 @@ index 11f3fa9..ab84e0b 100644
  /// getter/setter should NOT be obfuscated
  - (UIView *)currentMonsterView;
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
-index 31e57e2..f8a025d 100644
+index 0b3e15d..7c222c2 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATMonster.m
 @@ -83,33 +83,33 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
@@ -398,7 +398,7 @@ index 31e57e2..f8a025d 100644
  {
      NSLog(@"do nothing");
  }
-@@ -190,20 +190,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
+@@ -202,20 +202,20 @@ AT_DECLARE_NOTIFI(ATMonsterCreate);
  AT_IMPLEMENT_SINGLETON(ATMonsterCenter);
  
  /// should be obfuscated
@@ -440,7 +440,7 @@ index 7942045..dab6fe0 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
-index 4cbad09..f3edf22 100644
+index d1ebd23..56fd1be 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATTest.m
 @@ -28,22 +28,22 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
@@ -510,12 +510,15 @@ index 4cbad09..f3edf22 100644
      
      /// run should NOT be obfuscated
      [tmp run];
-@@ -94,13 +94,13 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
+@@ -94,16 +94,16 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
      id<IATMonster> monsterEx = [ATMonsterEx new];
      
      /// should be obfuscated
 -    [monsterEx scare];
 +    [monsterEx obfuscate_scare];
+     
+     /// should NOT be obfuscated
+     monsterEx.smart = YES;
      
      /// should be obfuscated
 -    ATTest *newObj = [ATTest createObj];
@@ -527,7 +530,7 @@ index 4cbad09..f3edf22 100644
      
      /// onATMonsterCreate is written in ScratchSpace should NOT be obfuscated
      [self onATMonsterCreate:nil];
-@@ -109,7 +109,7 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
+@@ -112,7 +112,7 @@ AT_IMPLEMENT_CREATE_OBJ(ATTest);
  AT_HANDLER_NOTIFY_DEFAULT_SELECTOR_NAME(ATMonsterCreate)
  {
      /// should be obfuscated
@@ -580,7 +583,7 @@ index 3224c42..82d9b9e 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
-index dc93605..26acb98 100644
+index 3fff214..7e8b2bc 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/IATMonster.h
 @@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
@@ -592,7 +595,7 @@ index dc93605..26acb98 100644
  
  /// should NOT be obfuscated : ATMonster conforms to IATMonster and it has property named amIBig
  - (void)amIBig;
-@@ -32,13 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -37,13 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
  @property (nonatomic, assign) BOOL hasEye;
  
  /// should be obfuscated
