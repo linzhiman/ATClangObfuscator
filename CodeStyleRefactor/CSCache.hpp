@@ -43,6 +43,8 @@ public:
     
     void addProtocolSelector(const std::string& protocol, const std::string& selector);
     
+    bool isIgnoreClsSelector(const std::string& clsName, const std::string& selector) const;
+    
     bool ignoreSelector(const std::string& selector) const;
     void addIgnoreSelector(const std::string& selector);
     

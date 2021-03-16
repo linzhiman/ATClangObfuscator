@@ -282,6 +282,31 @@ void CSCache::addProtocolSelector(const std::string& protocol, const std::string
     }
 }
 
+bool CSCache::isIgnoreClsSelector(const std::string& clsName, const std::string& selector) const
+{
+    std::string clsNameEx = clsName;
+    int nPos = clsNameEx.find("(");
+    if (nPos != -1) {
+        clsNameEx = clsNameEx.substr(0, nPos);
+    }
+    
+    auto itProtocols = mClsProtocolMap.find(clsNameEx);
+    if (itProtocols != mClsProtocolMap.end()) {
+        std::set<std::string> protocols = itProtocols->second;
+        for (std::string protocol : protocols) {
+            auto itSelectors = mIgnoreProtocolSelectorMap.find(protocol);
+            if (itSelectors != mIgnoreProtocolSelectorMap.end()) {
+                std::set<std::string> ignoreProtocolSelectors = itSelectors->second;
+                if (ignoreProtocolSelectors.find(selector) != ignoreProtocolSelectors.end()) {
+                    return true;
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
 bool CSCache::ignoreSelector(const std::string& selector) const
 {
     return mIgnoreSelectorSet.find(selector) != mIgnoreSelectorSet.end();

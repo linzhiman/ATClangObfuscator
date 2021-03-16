@@ -327,6 +327,8 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
         return false;
     }
     
+    std::string selector = decl->getSelector().getAsString();
+    
     if (isPropertyAccessor(decl)) {
         return false;
     }
@@ -334,6 +336,10 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
     bool isWrittenInScratchSpace = false;
     if (isMacroExpansion(decl, &isWrittenInScratchSpace)) {
         return !isWrittenInScratchSpace;
+    }
+    
+    if (mCache->isIgnoreClsSelector(getClassName(decl), selector)) {
+        return false;
     }
     
     bool inWhiteList = false;
