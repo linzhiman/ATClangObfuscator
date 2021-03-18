@@ -361,6 +361,30 @@ void CSCache::loadCache(const std::string &filePath)
             }
             count--;
         }
+        ifs >> ignore >> count;
+        while (count > 0) {
+            ifs >> keyTemp;
+            mClsProtocolMap[keyTemp] = std::set<std::string>();
+            ifs >> ignore >> count2;
+            while (count2 > 0) {
+                ifs >> valueTemp;
+                mClsProtocolMap[keyTemp].insert(valueTemp);
+                count2--;
+            }
+            count--;
+        }
+        ifs >> ignore >> count;
+        while (count > 0) {
+            ifs >> keyTemp;
+            mProtocolSelectorMap[keyTemp] = std::set<std::string>();
+            ifs >> ignore >> count2;
+            while (count2 > 0) {
+                ifs >> valueTemp;
+                mProtocolSelectorMap[keyTemp].insert(valueTemp);
+                count2--;
+            }
+            count--;
+        }
     }
 }
 
@@ -376,11 +400,11 @@ void CSCache::saveCache(const std::string &filePath)
     
     ofs << "\n";
     
-    ofs <<"ignoreProtocolSelectorProtocolCount:" << "\t" << mIgnoreProtocolSelectorMap.size() << "\n";
+    ofs <<"ignoreProtocolSelectorMapProtocolCount:" << "\t" << mIgnoreProtocolSelectorMap.size() << "\n";
     
     for (auto it = mIgnoreProtocolSelectorMap.begin(); it != mIgnoreProtocolSelectorMap.end(); ++it) {
         ofs << it->first << "\n";
-        ofs <<"ignoreProtocolSelectorSelectorCount:" << "\t" << it->second.size() << "\n";
+        ofs <<"ignoreProtocolSelectorMapSelectorCount:" << "\t" << it->second.size() << "\n";
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
             ofs << *it2 << "\n";
         }
@@ -388,11 +412,35 @@ void CSCache::saveCache(const std::string &filePath)
     
     ofs << "\n";
     
-    ofs <<"clsGetterSetterMapClsCount:" << "\t" << mClsPropertySelectorMap.size() << "\n";
+    ofs <<"clsPropertySelectorMapClsCount:" << "\t" << mClsPropertySelectorMap.size() << "\n";
     
     for (auto it = mClsPropertySelectorMap.begin(); it != mClsPropertySelectorMap.end(); ++it) {
         ofs << it->first << "\n";
-        ofs <<"clsGetterSetterMapGetterSetterCount:" << "\t" << it->second.size() << "\n";
+        ofs <<"clsPropertySelectorMapSelectorCount:" << "\t" << it->second.size() << "\n";
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            ofs << *it2 << "\n";
+        }
+    }
+    
+    ofs << "\n";
+    
+    ofs <<"clsProtocolMapClsCount:" << "\t" << mClsProtocolMap.size() << "\n";
+    
+    for (auto it = mClsProtocolMap.begin(); it != mClsProtocolMap.end(); ++it) {
+        ofs << it->first << "\n";
+        ofs <<"clsProtocolMapProtocolCount:" << "\t" << it->second.size() << "\n";
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            ofs << *it2 << "\n";
+        }
+    }
+    
+    ofs << "\n";
+    
+    ofs <<"protocolSelectorMapProtocolCount:" << "\t" << mProtocolSelectorMap.size() << "\n";
+    
+    for (auto it = mProtocolSelectorMap.begin(); it != mProtocolSelectorMap.end(); ++it) {
+        ofs << it->first << "\n";
+        ofs <<"protocolSelectorMapSelectorCount:" << "\t" << it->second.size() << "\n";
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
             ofs << *it2 << "\n";
         }

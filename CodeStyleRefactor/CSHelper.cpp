@@ -329,13 +329,21 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
     
     std::string selector = decl->getSelector().getAsString();
     
-    if (isPropertyAccessor(decl)) {
-        return false;
-    }
-    
     bool isWrittenInScratchSpace = false;
     if (isMacroExpansion(decl, &isWrittenInScratchSpace)) {
-        return !isWrittenInScratchSpace;
+        if (isWrittenInScratchSpace) {
+            return false;
+        }
+        else {
+            std::string filePath = getFilename(decl);
+            if (!mCache->isUserSourceCode(filePath, true)) {
+                return false;
+            }
+        }
+    }
+    
+    if (isPropertyAccessor(decl)) {
+        return false;
     }
     
     if (mCache->isIgnoreClsSelector(getClassName(decl), selector)) {
