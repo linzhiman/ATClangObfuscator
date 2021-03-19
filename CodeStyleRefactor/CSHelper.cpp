@@ -82,6 +82,7 @@ std::string CSHelper::newSelectorName(const std::string& selector)
         std::string prefix = *i + "_";
         if (oldName.find(prefix) == 0) {
             oldName = oldName.substr(prefix.length());
+            newName += "_";
             break;
         }
     }
