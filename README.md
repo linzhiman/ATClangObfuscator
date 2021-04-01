@@ -122,6 +122,12 @@ error: PCH file built from a different branch ((clang-1100.0.33.17)) than the co
 
 * 注：工具使用Release编译可以极大的提高工具的执行效率，特别是目标工程有大量文件时
 
+* 注：如果你移动了工具到其他目录，执行时报错‘找不到c++标准库头文件’，请在目标工程Other C++ Flags[Analyze配置]中添加相应路径：
+```
+-isystem
+"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/"
+```
+
 ### 参考资料
 
 * [Clang 12 documentation](https://clang.llvm.org/docs/)
