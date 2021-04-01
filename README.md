@@ -128,6 +128,8 @@ error: PCH file built from a different branch ((clang-1100.0.33.17)) than the co
 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/"
 ```
 
+* 注：如果你不想编译clang，可以直接使用我编译的release包，参考clangObfuscator.py来混淆你的代码
+
 ### 参考资料
 
 * [Clang 12 documentation](https://clang.llvm.org/docs/)
