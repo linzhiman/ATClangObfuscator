@@ -18,6 +18,7 @@ using namespace std;
 class CSCache
 {
 public:
+    bool usingCache();
     std::string getSelectorPrefix();
     std::set<std::string> &getOriSelectorPrefix();
     void loadConfig(const std::string &filePath);
@@ -85,6 +86,8 @@ private:
     
     std::string mSelectorPrefix;
     std::set<std::string> mOriSelectorPrefixSet;
+    
+    std::set<std::string> mConfig;
 };
 
 #endif /* CSCache_hpp */

@@ -463,7 +463,7 @@ int main(int argc, const char **argv)
     gHelper.setCache(&gCache);
     
     std::string selectorFilePath = sourceDir + "obfuscatorCache.txt";
-    if (sys::fs::exists(selectorFilePath)) {
+    if (gCache.usingCache() && sys::fs::exists(selectorFilePath)) {
         gCache.loadCache(selectorFilePath);
     }
     else {

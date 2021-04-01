@@ -19,6 +19,11 @@ void trim(string &s)
     }
 }
 
+bool CSCache::usingCache()
+{
+    return mConfig.find("cache") != mConfig.end();
+}
+
 std::string CSCache::getSelectorPrefix()
 {
     if (mSelectorPrefix.length() > 0) {
@@ -37,6 +42,7 @@ void CSCache::loadConfig(const std::string &filePath)
     std::ifstream ifs = std::ifstream(filePath, std::ofstream::in);
     
     std::string tmp;
+    bool config = false;
     bool prefix = false;
     bool oriPrefix = false;
     bool whiteList = false;
@@ -52,7 +58,17 @@ void CSCache::loadConfig(const std::string &filePath)
         if (tmp.empty()) {
             continue;
         }
-        if (tmp == "prefix:") {
+        if (tmp == "config:") {
+            config = true;
+            prefix = false;
+            oriPrefix = false;
+            whiteList = false;
+            blackList = false;
+            strongIgnoreFolder = false;
+            weakIgnoreFolder = false;
+        }
+        else if (tmp == "prefix:") {
+            config = false;
             prefix = true;
             oriPrefix = false;
             whiteList = false;
@@ -61,6 +77,7 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = false;
         }
         else if (tmp == "oriPrefix:") {
+            config = false;
             prefix = false;
             oriPrefix = true;
             whiteList = false;
@@ -69,6 +86,7 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = false;
         }
         else if (tmp == "whiteList:") {
+            config = false;
             prefix = false;
             oriPrefix = false;
             whiteList = true;
@@ -77,6 +95,7 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = false;
         }
         else if (tmp == "blackList:") {
+            config = false;
             prefix = false;
             oriPrefix = false;
             whiteList = false;
@@ -85,6 +104,7 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = false;
         }
         else if (tmp == "strongIgnoreFolder:") {
+            config = false;
             prefix = false;
             oriPrefix = false;
             whiteList = false;
@@ -93,6 +113,7 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = false;
         }
         else if (tmp == "weakIgnoreFolder:") {
+            config = false;
             prefix = false;
             oriPrefix = false;
             whiteList = false;
@@ -101,7 +122,10 @@ void CSCache::loadConfig(const std::string &filePath)
             weakIgnoreFolder = true;
         }
         else {
-            if (prefix) {
+            if (config) {
+                mConfig.insert(tmp);
+            }
+            else if (prefix) {
                 mSelectorPrefix = tmp;
             }
             else if (oriPrefix) {
