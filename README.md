@@ -1,5 +1,5 @@
 # ATClangObfuscator
-基于Clang进行代码混淆
+基于Clang进行代码混淆，支持黑、白名单，忽略目录，实际工程可用。
 
 
 ### 下载LLVM源码，生成LLVM.xcodeproj
@@ -41,8 +41,6 @@ set(LLVM_LINK_COMPONENTS
 
 add_clang_executable(CodeStyleRefactor
   CodeStyleRefactor.cpp
-  CSUtils.cpp
-  CSUtils.hpp
   )
 
 clang_target_link_libraries(CodeStyleRefactor
@@ -90,26 +88,27 @@ clang_target_link_libraries(CodeStyleRefactor
    You can remove it by disabling the build option Index-While-Building Functionality in Xcode.
    ```
    
-   * User-Defined 添加CC、CXX，值为本地编译的clang可执行文件路径（如果没有使用预编译，此处可省略）
+   * [可选] User-Defined 添加CC、CXX，值为本地编译的clang可执行文件路径（如果没有使用预编译，此处可省略）
    ```
    error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
    
    /Users/linzhiman/llvm-project/build/Release/bin/clang
    ```
+   
+   * [可选] Other C++ Flags 添加 -isystem "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/"
+   ```
+   fatal error: 'string' file not found
+   #include <string>
+   ```
 
 * 命令行进入ATClangObfuscatorTest目录，使用xcodebuild命令生成目标工程的compile_commands.json
 ```
-xcodebuild clean build -project ATClangObfuscatorTest.xcodeproj -scheme ATClangObfuscatorTest -configuration Analyze -sdk iphonesimulator13.2  | tee xcodebuild.log | xcpretty --report json-compilation-database --output compile_commands.json
+xcodebuild clean build -project ATClangObfuscatorTest.xcodeproj -scheme ATClangObfuscatorTest -configuration Analyze -arch x86_64 -sdk iphonesimulator13.2  | tee xcodebuild.log | xcpretty --report json-compilation-database --output compile_commands.json
 ```
 
 * 命令行进入llvm-project/build/Release/bin，执行CodeStyleRefactor工具
 ```
 ./CodeStyleRefactor /Users/linzhiman/ATClangObfuscator/ATClangObfuscatorTest/
-```
-
-* 如果提示找不到string头文件，将以下目录拷贝到llvm-project/build/Release目录
-```
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
 ```
 
 * 如果目标工程使用了预编译，当用xcodebuild后又修改了预编译文件，执行工具时会提示一下错误。此时避免重新编译整个工程，可如下处理：   
@@ -120,13 +119,18 @@ xcodebuild clean build -project ATClangObfuscatorTest.xcodeproj -scheme ATClangO
 error: PCH file built from a different branch ((clang-1100.0.33.17)) than the compiler ()
 ```
 
-* 注：工具使用Release编译可以极大的提高工具的执行效率，特别是目标工程有大量文件时
+* 如果提示类似‘fatal error: 'string' file not found’的错误，将以下目录拷贝到llvm-project/build/Release目录
+```
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+```
 
-* 注：如果你移动了工具到其他目录，执行时报错‘找不到c++标准库头文件’，请在目标工程Other C++ Flags[Analyze配置]中添加相应路径：
+* 如果你移动了工具到其他目录，执行时报错类似‘fatal error: 'string' file not found’的错误，请在目标工程Other C++ Flags中添加相应路径：
 ```
 -isystem
 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/"
 ```
+
+* 注：工具使用Release编译可以极大的提高工具的执行效率，特别是目标工程有大量文件时
 
 * 注：如果你不想编译clang，可以直接使用我编译的release包，参考clangObfuscator.py来混淆你的代码
 
