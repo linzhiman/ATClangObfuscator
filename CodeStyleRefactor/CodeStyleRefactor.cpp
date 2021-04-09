@@ -51,7 +51,6 @@ public:
         std::string clsName = decl->getNameAsString();
         
         if (gCache.containClsName(clsName)) {
-            llvm::outs() << "----TraverseObjCProtocolDecl " << clsName << "\n";
             return true;
         }
         
@@ -84,7 +83,6 @@ public:
         std::string clsName = decl->getNameAsString();
         
         if (gCache.containClsName(clsName)) {
-            llvm::outs() << "----TraverseObjCInterfaceDecl " << clsName << "\n";
             return true;
         }
         
@@ -137,7 +135,6 @@ public:
         std::string clsName = CSHelper::classCategoryName(decl);
         
         if (gCache.containClsName(clsName)) {
-            llvm::outs() << "----TraverseObjCCategoryDecl " << clsName << "\n";
             return true;
         }
 

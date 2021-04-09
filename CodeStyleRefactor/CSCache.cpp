@@ -243,15 +243,19 @@ void CSCache::genIgnoreProtocolSelector(void)
 
 void CSCache::addIgnoreProtocolSelector(const std::string& protocol, const std::string& selector)
 {
-    llvm::outs() << "addIgnoreProtocolSelector\t" << protocol << "\t" << selector << "\n";
-    
     auto it = mIgnoreProtocolSelectorMap.find(protocol);
     if (it != mIgnoreProtocolSelectorMap.end()) {
-        it->second.insert(selector);
+        auto retpair = it->second.insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addIgnoreProtocolSelector\t" << protocol << "\t" << selector << "\n";
+        }
     }
     else {
         mIgnoreProtocolSelectorMap[protocol] = std::set<std::string>();
-        mIgnoreProtocolSelectorMap[protocol].insert(selector);
+        auto retpair = mIgnoreProtocolSelectorMap[protocol].insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addIgnoreProtocolSelector\t" << protocol << "\t" << selector << "\n";
+        }
     }
 }
 
@@ -266,43 +270,55 @@ bool CSCache::isClsGetterOrSetter(const std::string& clsName, const std::string&
 
 void CSCache::addClsGetterOrSetter(const std::string& clsName, const std::string& selector)
 {
-    llvm::outs() << "addClsGetterOrSetter\t" << clsName << "\t" << selector << "\n";
-    
     auto it = mClsPropertySelectorMap.find(clsName);
     if (it != mClsPropertySelectorMap.end()) {
-        it->second.insert(selector);
+        auto retpair = it->second.insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addClsGetterOrSetter\t" << clsName << "\t" << selector << "\n";
+        }
     }
     else {
         mClsPropertySelectorMap[clsName] = std::set<std::string>();
-        mClsPropertySelectorMap[clsName].insert(selector);
+        auto retpair = mClsPropertySelectorMap[clsName].insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addClsGetterOrSetter\t" << clsName << "\t" << selector << "\n";
+        }
     }
 }
 
 void CSCache::addClsProtocol(const std::string& clsName, const std::string& protocol)
 {
-    llvm::outs() << "addClsProtocol\t" << clsName << "\t" << protocol << "\n";
-    
     auto it = mClsProtocolMap.find(clsName);
     if (it != mClsProtocolMap.end()) {
-        it->second.insert(protocol);
+        auto retpair = it->second.insert(protocol);
+        if (retpair.second) {
+            llvm::outs() << "addClsProtocol\t" << clsName << "\t" << protocol << "\n";
+        }
     }
     else {
         mClsProtocolMap[clsName] = std::set<std::string>();
-        mClsProtocolMap[clsName].insert(protocol);
+        auto retpair = mClsProtocolMap[clsName].insert(protocol);
+        if (retpair.second) {
+            llvm::outs() << "addClsProtocol\t" << clsName << "\t" << protocol << "\n";
+        }
     }
 }
 
 void CSCache::addProtocolSelector(const std::string& protocol, const std::string& selector)
 {
-    llvm::outs() << "addProtocolSelector\t" << protocol << "\t" << selector << "\n";
-    
     auto it = mProtocolSelectorMap.find(protocol);
     if (it != mProtocolSelectorMap.end()) {
-        it->second.insert(selector);
+        auto retpair = it->second.insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addProtocolSelector\t" << protocol << "\t" << selector << "\n";
+        }
     }
     else {
         mProtocolSelectorMap[protocol] = std::set<std::string>();
-        mProtocolSelectorMap[protocol].insert(selector);
+        auto retpair = mProtocolSelectorMap[protocol].insert(selector);
+        if (retpair.second) {
+            llvm::outs() << "addProtocolSelector\t" << protocol << "\t" << selector << "\n";
+        }
     }
 }
 
