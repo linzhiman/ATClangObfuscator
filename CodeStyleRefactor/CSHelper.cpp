@@ -373,6 +373,7 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
     if (inWhiteList) {
         return true;
     }
+    bool inBlackList = false;
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
         std::string filePath = getFilename(method);
         if (!mCache->isUserSourceCode(filePath, true)) {
@@ -380,14 +381,16 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
         }
         else {
             if (mCache->isInBlackList(getClassName(method))) {
-                return false;
+                inBlackList = true;
+                continue;
             }
             if (mCache->isInWhiteList(getClassName(method))) {
-                inWhiteList = true;
+                inBlackList = false;
+                continue;
             }
         }
     }
-    return inWhiteList;
+    return !inBlackList;
 }
 
 std::string CSHelper::getClassName(ObjCMethodDecl *decl)
