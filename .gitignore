@@ -1,0 +1,5 @@
+clangObfuscator
+compile_commands.json
+obfuscatorCache.txt
+xcodebuild.log
+*.xcscheme
