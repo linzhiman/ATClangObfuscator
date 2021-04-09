@@ -1,6 +1,7 @@
 # config
 config:
 # cache
+# log
 
 # obfuscate selector prefix
 prefix:
