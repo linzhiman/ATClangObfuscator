@@ -1,8 +1,8 @@
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
-index f897ff6..81423d9 100644
+index f62f5b7..a7249e8 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATAnimal.h
-@@ -34,16 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -35,16 +35,16 @@ NS_ASSUME_NONNULL_BEGIN
  - (void)setArea:(NSString *)area;
  
  /// should be obfuscated
@@ -166,10 +166,10 @@ index 3dfe5f6..f87eb72 100644
  @end
  
 diff --git a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
-index 3805657..2379b68 100644
+index 72a403b..2a037d5 100644
 --- a/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
 +++ b/ATClangObfuscatorTest/ATClangObfuscatorTest/Classes/ATFish.m
-@@ -11,26 +11,26 @@
+@@ -11,20 +11,20 @@
  @implementation ATFish
  
  /// should be obfuscated
@@ -193,6 +193,8 @@ index 3805657..2379b68 100644
 +- (void)obfuscate_swim_ex
  {
      NSLog(@"do nothing");
+ }
+@@ -38,7 +38,7 @@
  }
  
  /// should be obfuscated
