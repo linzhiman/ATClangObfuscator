@@ -29,6 +29,14 @@
     NSLog(@"do nothing");
 }
 
+/// property should NOT be obfuscated
+- (void)setDesc:(NSString *)desc
+{
+    [super setDesc:desc];
+    
+    NSLog(@"do nothing");
+}
+
 /// should be obfuscated
 + (ATFish *)createInstance
 {

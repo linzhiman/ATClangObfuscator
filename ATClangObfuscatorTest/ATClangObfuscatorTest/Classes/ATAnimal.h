@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *className;
 @property (nonatomic, strong) NSString *subClassName;
+@property (nonatomic, strong) NSString *desc;
 
 /// getter/setter should NOT be obfuscated
 - (int)type;
