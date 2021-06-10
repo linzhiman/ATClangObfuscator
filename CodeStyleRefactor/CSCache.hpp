@@ -19,6 +19,7 @@ class CSCache
 {
 public:
     bool usingCache();
+    bool usingLog();
     std::string getSelectorPrefix();
     std::set<std::string> &getOriSelectorPrefix();
     void loadConfig(const std::string &filePath);

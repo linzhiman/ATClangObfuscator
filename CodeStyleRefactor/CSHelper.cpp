@@ -375,6 +375,9 @@ bool CSHelper::isNeedObfuscate(ObjCMethodDecl *decl, bool isMessage)
     }
     bool inBlackList = false;
     for (ObjCMethodDecl *method : getDefineMethods(decl)) {
+        if (isPropertyAccessor(method)) {
+            return false;
+        }
         std::string filePath = getFilename(method);
         if (!mCache->isUserSourceCode(filePath, true)) {
             return false;
@@ -554,7 +557,9 @@ void CSHelper::addProtocolSelector(ObjCProtocolDecl *decl)
 
 void CSHelper::addReplacement(const std::string &filePath, const Replacement &replace)
 {
-    llvm::outs() << "\t\t" << "addReplacement" << "\t" << replace.toString() << "\n";
+    if (mCache->usingLog()) {
+        llvm::outs() << "\t\t" << "addReplacement" << "\t" << replace.toString() << "\n";
+    }
     
     if (mRpsMap->find(filePath) != mRpsMap->end()) {
         llvm::Error err = (*mRpsMap)[filePath].add(replace);
@@ -573,12 +578,16 @@ void CSHelper::addReplacement(Selector sel, bool isImplicitProperty, SourceLocat
     }
     
     if (mSourceManager->isWrittenInScratchSpace(loc)) {
-        llvm::outs() << "\t\t" << "AddReplacement\tIgnore ScratchSpace" << "\t" << selName << "\n";
+        if (mCache->usingLog()) {
+            llvm::outs() << "\t\t" << "AddReplacement\tIgnore ScratchSpace" << "\t" << selName << "\n";
+        }
         return;
     }
     
     if (mCache->ignoreSelector(selName)) {
-        llvm::outs() << "\t\t" << "AddReplacement\tIgnore" << "\t" << selName << "\n";
+        if (mCache->usingLog()) {
+            llvm::outs() << "\t\t" << "AddReplacement\tIgnore" << "\t" << selName << "\n";
+        }
         return;
     }
     

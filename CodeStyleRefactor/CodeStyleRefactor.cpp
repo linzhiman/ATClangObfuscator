@@ -54,7 +54,9 @@ public:
             return true;
         }
         
-        llvm::outs() << "TraverseObjCProtocolDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCProtocolDecl " << clsName << "\n";
+        }
         
         return RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCProtocolDecl(decl);
     }
@@ -69,7 +71,9 @@ public:
         
         gCache.addClsName(clsName);
         
-        llvm::outs() << "\t" << "VisitObjCProtocolDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\t" << "VisitObjCProtocolDecl " << clsName << "\n";
+        }
         
         return true;
     }
@@ -86,7 +90,9 @@ public:
             return true;
         }
         
-        llvm::outs() << "TraverseObjCInterfaceDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCInterfaceDecl " << clsName << "\n";
+        }
         
         return  RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCInterfaceDecl(decl);
     }
@@ -101,14 +107,18 @@ public:
         
         gCache.addClsName(clsName);
         
-        llvm::outs() << "\t" << "VisitObjCInterfaceDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\t" << "VisitObjCInterfaceDecl " << clsName << "\n";
+        }
         
         return true;
     }
     
     bool TraverseObjCImplementationDecl(ObjCImplementationDecl *decl)
     {
-        llvm::outs() << "TraverseObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        }
         
         _isTraverseImp = true;
         
@@ -121,7 +131,9 @@ public:
     
     bool VisitObjCImplementationDecl(ObjCImplementationDecl *decl)
     {
-        llvm::outs() << "\t" << "VisitObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\t" << "VisitObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        }
         
         return true;
     }
@@ -138,7 +150,9 @@ public:
             return true;
         }
 
-        llvm::outs() << "TraverseObjCCategoryDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCCategoryDecl " << clsName << "\n";
+        }
         
         return RecursiveASTVisitor<ObjCMethodDeclVisitor>::TraverseObjCCategoryDecl(decl);
     }
@@ -149,7 +163,9 @@ public:
         
         gCache.addClsName(clsName);
         
-        llvm::outs() << "\t" << "VisitObjCCategoryDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\t" << "VisitObjCCategoryDecl " << clsName << "\n";
+        }
         
         return true;
     }
@@ -158,7 +174,9 @@ public:
     {
         std::string clsName = CSHelper::classCategoryName(decl);
         
-        llvm::outs() << "TraverseObjCCategoryImplDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCCategoryImplDecl " << clsName << "\n";
+        }
         
         _isTraverseImp = true;
         
@@ -177,7 +195,9 @@ public:
             gCache.addClsName(clsName);
         }
         
-        llvm::outs() << "\t" << "VisitObjCCategoryImplDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\t" << "VisitObjCCategoryImplDecl " << clsName << "\n";
+        }
         
         return true;
     }
@@ -230,7 +250,9 @@ public:
             return true;
         }
         
-        llvm::outs() << "TraverseObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCImplementationDecl " << decl->getNameAsString() << "\n";
+        }
         
         _isTraverseImp = true;
         
@@ -245,7 +267,9 @@ public:
     {
         std::string clsName = CSHelper::classCategoryName(decl);
         
-        llvm::outs() << "TraverseObjCCategoryImplDecl " << clsName << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "TraverseObjCCategoryImplDecl " << clsName << "\n";
+        }
         
         _isTraverseImp = true;
         
@@ -289,7 +313,9 @@ public:
         messageExprVisitor.setContext(&context);
         messageExprVisitor.TraverseTranslationUnitDecl(context.getTranslationUnitDecl());
         
-        llvm::outs() << "\nTranslationUnit finish:" << CSUtils::getCurrentTimestamp() - start << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\nTranslationUnit finish:" << CSUtils::getCurrentTimestamp() - start << "\n";
+        }
     }
 };
 
@@ -340,7 +366,9 @@ public:
     {
         Selector sel = expr->getSelector();
         
-        llvm::outs() << "SelectorExpr" << "\t" << sel.getAsString() << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "SelectorExpr" << "\t" << sel.getAsString() << "\n";
+        }
         
         gCache.addIgnoreSelector(sel.getAsString());
         
@@ -375,11 +403,15 @@ public:
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override
     {
         if (!gCache.isUserSourceCode(InFile.str(), false)) {
-            llvm::outs() << "\n[Ignore] file:" << InFile.str() << "\n";
+            if (gCache.usingLog()) {
+                llvm::outs() << "\n[Ignore] file:" << InFile.str() << "\n";
+            }
             return unique_ptr<ASTConsumer>();
         }
         
-        llvm::outs() << "\n[Analize] file:" << InFile.str() << "\n";
+        if (gCache.usingLog()) {
+            llvm::outs() << "\n[Analize] file:" << InFile.str() << "\n";
+        }
         
         if (runSelectorComsumer) {
             return unique_ptr<CodeStyleSelectorConsumer> (new CodeStyleSelectorConsumer(CI));
