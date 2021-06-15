@@ -29,3 +29,6 @@ strongIgnoreFolder:
 # any file will be obfuscated when it call method that should be obfuscated 
 weakIgnoreFolder:
 # ThirdParty
+
+ignoreSelector:
+# create
