@@ -80,4 +80,4 @@ def do(version, tool_url, run_test):
 
 
 if __name__ == '__main__':
-    do('1.0.0', 'https://github.com/linzhiman/ATClangObfuscator/releases/download/1.0.0/ATClangObfuscator.zip', True)
+    do('1.0.2', 'https://github.com/linzhiman/ATClangObfuscator/releases/download/1.0.2/ATClangObfuscator.zip', True)
